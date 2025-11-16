@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Generate Website (Hook)",
+  "description": "Generate a static website using the MCP tool with sample business data. Creates index.html, styles.css, and menu.json in the /generated directory.",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Generate a website using the generate_website MCP tool with the following business information:\n\nBusiness Name: Kiro Coffee House\nBusiness Type: coffee shop\nTagline: Where Code Meets Coffee\nDescription: A cozy coffee shop for developers and creatives. We serve artisan coffee, fresh pastries, and provide a comfortable workspace with fast WiFi.\nWhatsApp: 628123456789\nInstagram: kirocoffeehouse\nTheme: classic\n\nMenu Items:\n- Espresso - Rp 25,000\n- Cappuccino - Rp 30,000\n- Latte - Rp 32,000\n- Cold Brew - Rp 35,000\n- Croissant - Rp 20,000\n- Chocolate Cake - Rp 28,000\n\nCall the generate_website MCP tool with this data and provide a summary of the generated files and their locations."
+  }
+}

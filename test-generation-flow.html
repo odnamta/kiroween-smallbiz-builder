@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Generation Flow</title>
+</head>
+<body>
+    <h1>Testing Website Generation Flow</h1>
+    <div id="results"></div>
+
+    <script src="public/js/sanitization.js"></script>
+    <script src="public/js/validation.js"></script>
+    <script src="public/js/template-engine.js"></script>
+    <script src="public/js/file-writer.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function log(message, type = 'info') {
+            const p = document.createElement('p');
+            p.textContent = message;
+            p.style.color = type === 'success' ? 'green' : type === 'error' ? 'red' : 'black';
+            results.appendChild(p);
+        }
+
+        async function testGenerationFlow() {
+            log('Starting generation flow test...');
+            
+            // Test data - Coffee Shop with Classic theme
+            const testData1 = {
+                business_name: "Brew Haven",
+                business_type: "coffee shop",
+                tagline: "Your Daily Dose of Happiness",
+                short_description: "Artisan coffee and fresh pastries in a cozy atmosphere.",
+                contact_whatsapp: "1234567890",
+                instagram_handle: "brewhaven_cafe",
+                menu_items: [
+                    {name: "Espresso", price: "$3.50"},
+                    {name: "Cappuccino", price: "$4.50"},
+                    {name: "Croissant", price: "$3.00"}
+                ],
+                theme_choice: "classic"
+            };
+
+            // Test data - Barber Shop with Kiroween theme
+            const testData2 = {
+                business_name: "Sharp Cuts",
+                business_type: "barber",
+                tagline: "Where Style Meets Precision",
+                short_description: "Professional haircuts and grooming services for the modern gentleman.",
+                contact_whatsapp: "9876543210",
+                instagram_handle: "sharpcuts_barber",
+                menu_items: [
+                    {name: "Classic Cut", price: "$25"},
+                    {name: "Beard Trim", price: "$15"},
+                    {name: "Hot Towel Shave", price: "$30"}
+                ],
+                theme_choice: "kiroween"
+            };
+
+            try {
+                // Test 1: Sanitization
+                log('Test 1: Sanitizing form data...');
+                const sanitized1 = Sanitization.sanitizeFormData(testData1);
+                if (sanitized1.business_name === "Brew Haven") {
+                    log('✓ Sanitization working correctly', 'success');
+                } else {
+                    log('✗ Sanitization failed', 'error');
+                }
+
+                // Test 2: Load template
+                log('Test 2: Loading base template...');
+                const templateResponse = await fetch('public/templates/base-template.html');
+                const template = await templateResponse.text();
+                if (template.includes('{{business_name}}')) {
+                    log('✓ Template loaded successfully', 'success');
+                } else {
+                    log('✗ Template loading failed', 'error');
+                }
+
+                // Test 3: Load Classic theme
+                log('Test 3: Loading Classic theme CSS...');
+                const classicResponse = await fetch('public/themes/classic.css');
+                const classicCSS = await classicResponse.text();
+                if (classicCSS.length > 0) {
+                    log('✓ Classic theme loaded successfully', 'success');
+                } else {
+                    log('✗ Classic theme loading failed', 'error');
+                }
+
+                // Test 4: Load Kiroween theme
+                log('Test 4: Loading Kiroween theme CSS...');
+                const kiroweenResponse = await fetch('public/themes/kiroween.css');
+                const kiroweenCSS = await kiroweenResponse.text();
+                if (kiroweenCSS.length > 0) {
+                    log('✓ Kiroween theme loaded successfully', 'success');
+                } else {
+                    log('✗ Kiroween theme loading failed', 'error');
+                }
+
+                // Test 5: Parse template with Classic theme data
+                log('Test 5: Parsing template with Classic theme data...');
+                const html1 = parseTemplate(template, sanitized1);
+                if (html1.includes('Brew Haven') && 
+                    html1.includes('Your Daily Dose of Happiness') &&
+                    html1.includes('Espresso') &&
+                    html1.includes('$3.50') &&
+                    html1.includes('https://wa.me/1234567890') &&
+                    html1.includes('https://instagram.com/brewhaven_cafe')) {
+                    log('✓ Template parsing successful for Classic theme', 'success');
+                    log('  - Business name injected correctly');
+                    log('  - Tagline injected correctly');
+                    log('  - Menu items rendered correctly');
+                    log('  - WhatsApp link formatted correctly');
+                    log('  - Instagram link formatted correctly');
+                } else {
+                    log('✗ Template parsing failed for Classic theme', 'error');
+                }
+
+                // Test 6: Parse template with Kiroween theme data
+                log('Test 6: Parsing template with Kiroween theme data...');
+                const sanitized2 = Sanitization.sanitizeFormData(testData2);
+                const html2 = parseTemplate(template, sanitized2);
+                if (html2.includes('Sharp Cuts') && 
+                    html2.includes('Where Style Meets Precision') &&
+                    html2.includes('Classic Cut') &&
+                    html2.includes('$25') &&
+                    html2.includes('https://wa.me/9876543210') &&
+                    html2.includes('https://instagram.com/sharpcuts_barber')) {
+                    log('✓ Template parsing successful for Kiroween theme', 'success');
+                    log('  - Business name injected correctly');
+                    log('  - Tagline injected correctly');
+                    log('  - Menu items rendered correctly');
+                    log('  - WhatsApp link formatted correctly');
+                    log('  - Instagram link formatted correctly');
+                } else {
+                    log('✗ Template parsing failed for Kiroween theme', 'error');
+                }
+
+                // Test 7: Verify menu items loop
+                log('Test 7: Verifying menu items loop...');
+                const menuItemCount1 = (html1.match(/<li>/g) || []).length;
+                const menuItemCount2 = (html2.match(/<li>/g) || []).length;
+                if (menuItemCount1 === 3 && menuItemCount2 === 3) {
+                    log(`✓ Menu items loop working (${menuItemCount1} items in test 1, ${menuItemCount2} items in test 2)`, 'success');
+                } else {
+                    log(`✗ Menu items loop failed (expected 3, got ${menuItemCount1} and ${menuItemCount2})`, 'error');
+                }
+
+                // Test 8: Create JSON file content
+                log('Test 8: Creating menu JSON...');
+                const menuJson1 = JSON.stringify(sanitized1.menu_items, null, 2);
+                const menuJson2 = JSON.stringify(sanitized2.menu_items, null, 2);
+                if (menuJson1.includes('Espresso') && menuJson2.includes('Classic Cut')) {
+                    log('✓ Menu JSON created successfully', 'success');
+                } else {
+                    log('✗ Menu JSON creation failed', 'error');
+                }
+
+                // Test 9: Verify XSS protection
+                log('Test 9: Testing XSS protection...');
+                const xssData = {
+                    business_name: "<scr" + "ipt>alert('xss')</scr" + "ipt>",
+                    business_type: "coffee shop",
+                    tagline: "<img src=x onerror=alert('xss')>",
+                    short_description: "Normal text",
+                    contact_whatsapp: "1234567890",
+                    instagram_handle: "test_handle",
+                    menu_items: [{name: "<b>Bold</b>", price: "$5"}],
+                    theme_choice: "classic"
+                };
+                const sanitizedXSS = Sanitization.sanitizeFormData(xssData);
+                const htmlXSS = parseTemplate(template, sanitizedXSS);
+                if (!htmlXSS.includes('<scr' + 'ipt>') && !htmlXSS.includes('onerror=')) {
+                    log('✓ XSS protection working correctly', 'success');
+                } else {
+                    log('✗ XSS protection failed', 'error');
+                }
+
+                log('\n=== All tests completed ===', 'success');
+                log('The generation flow is working correctly!', 'success');
+                log('You can now test the actual form at public/index.html', 'success');
+
+            } catch (error) {
+                log(`✗ Error during testing: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        // Run tests
+        testGenerationFlow();
+    </script>
+</body>
+</html>

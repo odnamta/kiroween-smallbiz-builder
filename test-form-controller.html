@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Controller Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        h2 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .menu-items-section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        .menu-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .menu-item-fields {
+            flex: 1;
+            display: flex;
+            gap: 1rem;
+        }
+        .menu-item-field {
+            flex: 1;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Form Controller Module Test</h1>
+    
+    <div id="testResults"></div>
+
+    <!-- Mock form structure for testing -->
+    <div id="mockForm" style="display: none;">
+        <div class="form-group">
+            <label for="business_type">Business Type</label>
+            <select id="business_type">
+                <option value="">Select type</option>
+                <option value="coffee_shop">Coffee Shop</option>
+                <option value="bakery">Bakery</option>
+                <option value="barber_shop">Barber Shop</option>
+                <option value="food_stall">Food Stall</option>
+                <option value="laundry_service">Laundry Service</option>
+                <option value="photographer_creator">Photographer</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="tagline">Tagline</label>
+            <input type="text" id="tagline">
+        </div>
+        
+        <div class="form-group">
+            <label for="short_description">Description</label>
+            <textarea id="short_description"></textarea>
+        </div>
+        
+        <div class="menu-items-section">
+            <h2>Menu Items</h2>
+            <div id="menuItemsContainer"></div>
+        </div>
+        
+        <button id="usePresetButton" class="btn">Use Preset</button>
+    </div>
+
+    <script type="module">
+        import { getPreset, hasMenuItems } from './public/js/presets.js';
+        import { 
+            populateFormWithPreset, 
+            clearMenuItems, 
+            addMenuItemsFromPreset,
+            toggleMenuSection,
+            handleBusinessTypeChange
+        } from './public/js/form-controller.js';
+
+        const results = [];
+
+        function runTest(name, testFn) {
+            try {
+                const result = testFn();
+                results.push({ name, passed: result, error: null });
+            } catch (error) {
+                results.push({ name, passed: false, error: error.message });
+            }
+        }
+
+        // Test 1: Coffee Shop Preset
+        runTest('Coffee shop preset exists and has correct structure', () => {
+            const preset = getPreset('coffee_shop');
+            return preset && 
+                   preset.default_tagline === "Your Daily Dose of Happiness" &&
+                   preset.default_menu_items.length === 4;
+        });
+
+        // Test 2: Bakery Preset
+        runTest('Bakery preset exists and has correct structure', () => {
+            const preset = getPreset('bakery');
+            return preset && 
+                   preset.default_tagline === "Freshly Baked Every Day" &&
+                   preset.default_menu_items.length === 4;
+        });
+
+        // Test 3: Barber Shop Preset
+        runTest('Barber shop preset exists and has correct structure', () => {
+            const preset = getPreset('barber_shop');
+            return preset && 
+                   preset.default_tagline === "Where Style Meets Precision" &&
+                   preset.default_menu_items.length === 4;
+        });
+
+        // Test 4: Food Stall Preset
+        runTest('Food stall preset exists and has correct structure', () => {
+            const preset = getPreset('food_stall');
+            return preset && 
+                   preset.default_tagline === "Delicious & Affordable Street Food" &&
+                   preset.default_menu_items.length === 4;
+        });
+
+        // Test 5: Laundry Service Preset
+        runTest('Laundry service preset exists and has correct structure', () => {
+            const preset = getPreset('laundry_service');
+            return preset && 
+                   preset.default_tagline === "Clean Clothes, Fast Service" &&
+                   preset.default_menu_items.length === 4;
+        });
+
+        // Test 6: Photographer Preset
+        runTest('Photographer preset exists and has correct structure', () => {
+            const preset = getPreset('photographer_creator');
+            return preset && 
+                   preset.default_tagline === "Capturing Your Best Moments" &&
+                   preset.default_menu_items.length === 4;
+        });
+
+        // Test 7: hasMenuItems function
+        runTest('hasMenuItems returns true for coffee_shop', () => {
+            return hasMenuItems('coffee_shop') === true;
+        });
+
+        runTest('hasMenuItems returns true for laundry_service', () => {
+            return hasMenuItems('laundry_service') === true;
+        });
+
+        // Test 8: Populate form with preset
+        runTest('populateFormWithPreset fills tagline field', () => {
+            const preset = getPreset('coffee_shop');
+            populateFormWithPreset(preset);
+            const taglineField = document.getElementById('tagline');
+            return taglineField.value === "Your Daily Dose of Happiness";
+        });
+
+        // Test 9: Populate form description
+        runTest('populateFormWithPreset fills description field', () => {
+            const preset = getPreset('bakery');
+            populateFormWithPreset(preset);
+            const descField = document.getElementById('short_description');
+            return descField.value.includes("Homemade breads");
+        });
+
+        // Test 10: Clear menu items
+        runTest('clearMenuItems removes all menu items', () => {
+            const container = document.getElementById('menuItemsContainer');
+            container.innerHTML = '<div class="menu-item">Test</div>';
+            clearMenuItems();
+            return container.innerHTML === '';
+        });
+
+        // Test 11: Add menu items from preset
+        runTest('addMenuItemsFromPreset creates correct number of items', () => {
+            const preset = getPreset('coffee_shop');
+            clearMenuItems();
+            addMenuItemsFromPreset(preset.default_menu_items);
+            const container = document.getElementById('menuItemsContainer');
+            const menuItems = container.querySelectorAll('.menu-item');
+            return menuItems.length === 4;
+        });
+
+        // Test 12: Menu items have correct values
+        runTest('addMenuItemsFromPreset sets correct values', () => {
+            const preset = getPreset('barber_shop');
+            clearMenuItems();
+            addMenuItemsFromPreset(preset.default_menu_items);
+            const firstNameInput = document.getElementById('menu_item_name_0');
+            return firstNameInput && firstNameInput.value === "Classic Haircut";
+        });
+
+        // Test 13: Toggle menu section visibility
+        runTest('toggleMenuSection shows menu section', () => {
+            const menuSection = document.querySelector('.menu-items-section');
+            toggleMenuSection(true);
+            return menuSection.style.display === 'block';
+        });
+
+        runTest('toggleMenuSection hides menu section', () => {
+            const menuSection = document.querySelector('.menu-items-section');
+            toggleMenuSection(false);
+            return menuSection.style.display === 'none';
+        });
+
+        // Test 14: All presets use Indonesian Rupiah
+        runTest('All presets use Rp currency format', () => {
+            const businessTypes = ['coffee_shop', 'bakery', 'barber_shop', 'food_stall', 'laundry_service', 'photographer_creator'];
+            return businessTypes.every(type => {
+                const preset = getPreset(type);
+                return preset.default_menu_items.every(item => item.price.startsWith('Rp'));
+            });
+        });
+
+        // Test 15: Food stall has Indonesian menu items
+        runTest('Food stall preset has Indonesian menu items', () => {
+            const preset = getPreset('food_stall');
+            const menuNames = preset.default_menu_items.map(item => item.name);
+            return menuNames.includes('Nasi Goreng') && menuNames.includes('Mie Ayam');
+        });
+
+        // Test 16: Full preset application for coffee shop
+        runTest('Full preset application for coffee_shop works', () => {
+            const preset = getPreset('coffee_shop');
+            clearMenuItems();
+            populateFormWithPreset(preset);
+            
+            const tagline = document.getElementById('tagline').value;
+            const description = document.getElementById('short_description').value;
+            const menuItems = document.querySelectorAll('.menu-item');
+            
+            return tagline === preset.default_tagline &&
+                   description === preset.default_short_description &&
+                   menuItems.length === 4;
+        });
+
+        // Display results
+        const resultsDiv = document.getElementById('testResults');
+        let passCount = 0;
+        let failCount = 0;
+
+        results.forEach(result => {
+            const div = document.createElement('div');
+            div.className = `test-result ${result.passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `
+                <strong>${result.passed ? '✓' : '✗'} ${result.name}</strong>
+                ${result.error ? `<br>Error: ${result.error}` : ''}
+            `;
+            resultsDiv.appendChild(div);
+
+            if (result.passed) passCount++;
+            else failCount++;
+        });
+
+        const summary = document.createElement('div');
+        summary.className = 'test-section';
+        summary.innerHTML = `
+            <h2>Test Summary</h2>
+            <p><strong>Total Tests:</strong> ${results.length}</p>
+            <p><strong>Passed:</strong> ${passCount}</p>
+            <p><strong>Failed:</strong> ${failCount}</p>
+            <p><strong>Success Rate:</strong> ${((passCount / results.length) * 100).toFixed(1)}%</p>
+        `;
+        resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+
+        console.log('Form controller tests completed:', { passCount, failCount, total: results.length });
+    </script>
+</body>
+</html>

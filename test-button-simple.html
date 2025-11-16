@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Button Test</title>
+</head>
+<body>
+    <h1>Testing Preset Button</h1>
+    
+    <select id="business_type">
+        <option value="">Select</option>
+        <option value="coffee_shop">Coffee Shop</option>
+        <option value="bakery">Bakery</option>
+    </select>
+    
+    <button type="button" id="usePresetButton">Use Preset</button>
+    
+    <div id="tagline"></div>
+    <div id="short_description"></div>
+    <div id="menuItemsContainer"></div>
+    <div id="presetFeedback"></div>
+    
+    <script type="module">
+        import { initializeFormController } from './public/js/form-controller.js';
+        
+        console.log('Test page loaded');
+        initializeFormController();
+        console.log('Controller initialized');
+        
+        // Test button click
+        document.getElementById('usePresetButton').addEventListener('click', () => {
+            console.log('Direct click handler fired!');
+        });
+    </script>
+</body>
+</html>

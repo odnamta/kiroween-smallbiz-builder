@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Reload Hooks Explorer",
+  "description": "Automatically reloads and displays hooks when hook configuration files are created or modified in the .kiro/hooks directory",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      ".kiro/hooks/**/*.json",
+      ".kiro/hooks/**/*.yaml",
+      ".kiro/hooks/**/*.yml"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Hook configuration files have been modified. Please reload the hooks explorer view to display the updated hooks list. Verify that all hooks are properly configured and visible to the user."
+  }
+}

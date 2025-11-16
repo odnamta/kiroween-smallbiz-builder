@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 23 - Integration Testing Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .test-scenario {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .test-scenario h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .test-scenario ol {
+            margin-left: 20px;
+        }
+        
+        .test-scenario li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+        
+        .expected-result {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+        
+        .expected-result strong {
+            color: #2e7d32;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .checklist li {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checklist li:hover {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+        
+        .checklist li.checked {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        .checklist li::before {
+            content: '☐ ';
+            font-size: 1.2em;
+            margin-right: 10px;
+            color: #667eea;
+        }
+        
+        .checklist li.checked::before {
+            content: '☑ ';
+            color: #4caf50;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info-box strong {
+            color: #1976d2;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .warning-box strong {
+            color: #f57c00;
+        }
+        
+        .viewport-sizes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .viewport-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .viewport-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .viewport-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .viewport-card .size {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #764ba2;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Task 23: Integration Testing Guide</h1>
+            <p>End-to-End Testing with Presets and Deployment Helper</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>Quick Start</h2>
+                <div class="button-group">
+                    <a href="public/index.html" target="_blank" class="btn btn-primary">
+                        🚀 Open Website Builder
+                    </a>
+                    <a href="test-task-23-e2e.html" target="_blank" class="btn btn-secondary">
+                        🔬 Run Automated Tests
+                    </a>
+                </div>
+                
+                <div class="info-box">
+                    <strong>Testing Overview:</strong> This guide walks you through comprehensive testing of the website builder, including all 6 business type presets, deployment instructions, and responsive design validation.
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Test Progress</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar">0%</div>
+                </div>
+                <p id="progressText">0 of 11 test scenarios completed</p>
+            </div>
+            
+            <div class="section">
+                <h2>Test Scenarios</h2>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 1: Coffee Shop with Classic Theme</h3>
+                    <ol>
+                        <li>Open the Website Builder</li>
+                        <li>Select "Coffee Shop" from business type dropdown</li>
+                        <li>Click "Use Preset" button</li>
+                        <li>Verify tagline: "Your Daily Dose of Happiness"</li>
+                        <li>Verify description mentions artisan coffee</li>
+                        <li>Verify menu items: Espresso (Rp 15,000), Cappuccino (Rp 25,000), Latte (Rp 28,000), Croissant (Rp 18,000)</li>
+                        <li>Fill in business name, WhatsApp, and Instagram</li>
+                        <li>Select "Classic" theme</li>
+                        <li>Click "Generate Website"</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> 4 files download (index.html, styles.css, menu.json, deployment-instructions.txt). Generated site has light, professional styling with coffee shop content.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 2: Food Stall with Kiroween Theme</h3>
+                    <ol>
+                        <li>Refresh the page or clear the form</li>
+                        <li>Select "Food Stall" from business type dropdown</li>
+                        <li>Click "Use Preset" button</li>
+                        <li>Verify tagline emphasizes "Delicious & Affordable"</li>
+                        <li>Verify menu items: Nasi Goreng, Mie Ayam, Sate Ayam, Es Teh Manis</li>
+                        <li>Fill in business details</li>
+                        <li>Select "Kiroween" theme</li>
+                        <li>Click "Generate Website"</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> 4 files download. Generated site has dark theme with orange/purple accents and food stall content.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 3: Bakery with Classic Theme</h3>
+                    <ol>
+                        <li>Select "Bakery" from business type dropdown</li>
+                        <li>Click "Use Preset" button</li>
+                        <li>Verify tagline: "Freshly Baked Every Day"</li>
+                        <li>Verify menu items include breads, cakes, and pastries</li>
+                        <li>Fill in business details</li>
+                        <li>Select "Classic" theme</li>
+                        <li>Generate website</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> 4 files download with bakery-themed content.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 4: Barber Shop with Kiroween Theme</h3>
+                    <ol>
+                        <li>Select "Barber Shop" from business type dropdown</li>
+                        <li>Click "Use Preset" button</li>
+                        <li>Verify tagline: "Where Style Meets Precision"</li>
+                        <li>Verify services: Classic Haircut, Beard Trim, Hot Towel Shave, Hair + Beard Combo</li>
+                        <li>Fill in business details</li>
+                        <li>Select "Kiroween" theme</li>
+                        <li>Generate website</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> 4 files download with barber shop services displayed.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 5: Laundry Service</h3>
+                    <ol>
+                        <li>Select "Laundry Service" from business type dropdown</li>
+                        <li>Click "Use Preset" button</li>
+                        <li>Verify tagline: "Clean Clothes, Fast Service"</li>
+                        <li>Verify service items populate (Wash & Fold, Wash & Iron, Dry Clean, Express Service)</li>
+                        <li>Fill in business details</li>
+                        <li>Select any theme</li>
+                        <li>Generate website</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> 4 files download. Services display correctly in generated site.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 6: Photographer/Creator</h3>
+                    <ol>
+                        <li>Select "Photographer/Creator" from business type dropdown</li>
+                        <li>Click "Use Preset" button</li>
+                        <li>Verify tagline: "Capturing Your Best Moments"</li>
+                        <li>Verify packages: Portrait Session, Event Coverage, Social Media Package, Product Photography</li>
+                        <li>Fill in business details</li>
+                        <li>Select any theme</li>
+                        <li>Generate website</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> 4 files download. Photography packages display correctly.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 7: Edit Preset Values</h3>
+                    <ol>
+                        <li>Apply any preset</li>
+                        <li>Edit the tagline to something custom</li>
+                        <li>Edit the description</li>
+                        <li>Add a new menu item</li>
+                        <li>Remove an existing menu item</li>
+                        <li>Change prices</li>
+                        <li>Generate website</li>
+                        <li>Open generated index.html</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> All custom edits appear in the generated website. Preset values are not locked.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 8: Manual Entry (No Preset)</h3>
+                    <ol>
+                        <li>Refresh the page</li>
+                        <li>Select a business type but DON'T click "Use Preset"</li>
+                        <li>Fill all fields manually</li>
+                        <li>Add menu items manually</li>
+                        <li>Select a theme</li>
+                        <li>Generate website</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> Website generates successfully with manually entered data. Presets are optional.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 9: Deployment Instructions Validation</h3>
+                    <ol>
+                        <li>Generate any website</li>
+                        <li>Locate and open deployment-instructions.txt</li>
+                        <li>Verify it contains clear file explanations</li>
+                        <li>Verify Netlify drag-and-drop instructions are present</li>
+                        <li>Verify GitHub Pages instructions are present</li>
+                        <li>Verify other hosting options mentioned (Vercel, Cloudflare Pages)</li>
+                        <li>Verify update instructions are included</li>
+                        <li>Verify troubleshooting tips are included</li>
+                        <li>Check that language is simple and non-technical</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> Deployment instructions are clear, comprehensive, and easy to follow for non-technical users.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 10: Responsive Design - Mobile</h3>
+                    <ol>
+                        <li>Generate any website</li>
+                        <li>Open generated index.html</li>
+                        <li>Open browser DevTools (F12)</li>
+                        <li>Toggle device toolbar (Ctrl+Shift+M or Cmd+Shift+M)</li>
+                        <li>Set viewport to 320px width (iPhone SE)</li>
+                        <li>Verify layout adapts to mobile</li>
+                        <li>Verify text is readable</li>
+                        <li>Verify buttons are at least 44px</li>
+                        <li>Verify menu items stack vertically</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> Website displays perfectly on mobile with no horizontal scrolling, readable text, and touch-friendly buttons.
+                    </div>
+                </div>
+                
+                <div class="test-scenario">
+                    <h3>Scenario 11: Responsive Design - Tablet & Desktop</h3>
+                    <ol>
+                        <li>With generated site open in DevTools</li>
+                        <li>Set viewport to 768px (iPad)</li>
+                        <li>Verify layout adapts appropriately</li>
+                        <li>Set viewport to 1024px (Desktop)</li>
+                        <li>Verify layout uses full width</li>
+                        <li>Set viewport to 1920px (Large Desktop)</li>
+                        <li>Verify content is centered and readable</li>
+                    </ol>
+                    <div class="expected-result">
+                        <strong>Expected Result:</strong> Website adapts smoothly to all viewport sizes with appropriate layouts for each breakpoint.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Viewport Reference</h2>
+                <div class="viewport-sizes">
+                    <div class="viewport-card">
+                        <h4>📱 Mobile</h4>
+                        <div class="size">320px</div>
+                        <p>iPhone SE</p>
+                    </div>
+                    <div class="viewport-card">
+                        <h4>📱 Mobile Large</h4>
+                        <div class="size">375px</div>
+                        <p>iPhone 12</p>
+                    </div>
+                    <div class="viewport-card">
+                        <h4>📱 Tablet</h4>
+                        <div class="size">768px</div>
+                        <p>iPad</p>
+                    </div>
+                    <div class="viewport-card">
+                        <h4>💻 Desktop</h4>
+                        <div class="size">1024px</div>
+                        <p>Laptop</p>
+                    </div>
+                    <div class="viewport-card">
+                        <h4>🖥️ Large Desktop</h4>
+                        <div class="size">1920px</div>
+                        <p>Full HD</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Interactive Checklist</h2>
+                <p>Click items to mark them as complete:</p>
+                <ul class="checklist" id="checklist">
+                    <li data-scenario="1">Test Coffee Shop with Classic theme</li>
+                    <li data-scenario="2">Test Food Stall with Kiroween theme</li>
+                    <li data-scenario="3">Test Bakery with Classic theme</li>
+                    <li data-scenario="4">Test Barber Shop with Kiroween theme</li>
+                    <li data-scenario="5">Test Laundry Service preset</li>
+                    <li data-scenario="6">Test Photographer/Creator preset</li>
+                    <li data-scenario="7">Test editing preset values</li>
+                    <li data-scenario="8">Test manual entry without preset</li>
+                    <li data-scenario="9">Validate deployment instructions content</li>
+                    <li data-scenario="10">Test responsive design on mobile (320px)</li>
+                    <li data-scenario="11">Test responsive design on tablet (768px) and desktop (1024px+)</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Success Criteria</h2>
+                <div class="warning-box">
+                    <strong>All tests must pass:</strong>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li>All 6 business type presets work correctly</li>
+                        <li>Both themes (Classic and Kiroween) generate properly</li>
+                        <li>All 4 files download (HTML, CSS, JSON, TXT)</li>
+                        <li>Deployment instructions are clear and complete</li>
+                        <li>Preset values can be edited</li>
+                        <li>Manual entry works without presets</li>
+                        <li>Responsive design works at all viewport sizes</li>
+                        <li>Generated websites display correctly</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Interactive checklist functionality
+        const checklist = document.getElementById('checklist');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const totalItems = checklist.querySelectorAll('li').length;
+        
+        // Load saved progress from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('task23Progress');
+            if (saved) {
+                const completed = JSON.parse(saved);
+                completed.forEach(index => {
+                    const item = checklist.querySelector(`li[data-scenario="${index}"]`);
+                    if (item) item.classList.add('checked');
+                });
+                updateProgress();
+            }
+        }
+        
+        // Save progress to localStorage
+        function saveProgress() {
+            const completed = [];
+            checklist.querySelectorAll('li.checked').forEach(item => {
+                completed.push(item.dataset.scenario);
+            });
+            localStorage.setItem('task23Progress', JSON.stringify(completed));
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            const completed = checklist.querySelectorAll('li.checked').length;
+            const percentage = Math.round((completed / totalItems) * 100);
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+            progressText.textContent = `${completed} of ${totalItems} test scenarios completed`;
+            
+            if (completed === totalItems) {
+                progressBar.style.background = 'linear-gradient(90deg, #4caf50 0%, #8bc34a 100%)';
+                setTimeout(() => {
+                    alert('🎉 Congratulations! All test scenarios completed!\n\nTask 23 testing is complete.');
+                }, 500);
+            }
+        }
+        
+        // Add click handlers to checklist items
+        checklist.querySelectorAll('li').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+                saveProgress();
+                updateProgress();
+            });
+        });
+        
+        // Load progress on page load
+        loadProgress();
+        
+        // Add reset button
+        const resetBtn = document.createElement('button');
+        resetBtn.textContent = '🔄 Reset Progress';
+        resetBtn.className = 'btn btn-secondary';
+        resetBtn.style.marginTop = '20px';
+        resetBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset all progress?')) {
+                localStorage.removeItem('task23Progress');
+                checklist.querySelectorAll('li').forEach(item => {
+                    item.classList.remove('checked');
+                });
+                updateProgress();
+            }
+        });
+        checklist.parentElement.appendChild(resetBtn);
+    </script>
+</body>
+</html>

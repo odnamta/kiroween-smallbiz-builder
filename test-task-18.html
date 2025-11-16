@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 18 - Preset UI Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        h2 { color: #667eea; font-size: 1.2rem; margin-bottom: 1rem; }
+        .test-item {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-left: 3px solid #667eea;
+        }
+        .pass { border-left-color: #27ae60; }
+        .fail { border-left-color: #e74c3c; }
+        .status {
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        .pass .status { color: #27ae60; }
+        .fail .status { color: #e74c3c; }
+        button {
+            padding: 0.5rem 1rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #667eea;
+            color: white;
+        }
+        button:hover { background: #5568d3; }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Task 18 - Preset UI Functionality Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Checklist</h2>
+        <div id="testResults"></div>
+        <button onclick="runTests()">Run Tests</button>
+        <button onclick="location.reload()">Reset</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Live Form Preview</h2>
+        <p>Open the form below and test the following:</p>
+        <ul>
+            <li>Select a business type from the dropdown (should have 6 options)</li>
+            <li>"Use Preset" button should become enabled</li>
+            <li>Click "Use Preset" to populate form fields</li>
+            <li>Verify tagline, description, and menu items are filled</li>
+            <li>Verify helper text appears</li>
+            <li>Test on mobile viewport (resize browser)</li>
+        </ul>
+        <button onclick="openForm()">Open Form in New Tab</button>
+        <div style="margin-top: 1rem;">
+            <iframe id="formFrame" src="public/index.html"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const tests = [
+            {
+                name: "Business type dropdown has 6 options",
+                check: () => {
+                    const frame = document.getElementById('formFrame');
+                    const select = frame.contentDocument?.getElementById('business_type');
+                    const options = select?.querySelectorAll('option[value]:not([value=""])');
+                    return options?.length === 6;
+                }
+            },
+            {
+                name: "Use Preset button exists",
+                check: () => {
+                    const frame = document.getElementById('formFrame');
+                    return !!frame.contentDocument?.getElementById('usePresetButton');
+                }
+            },
+            {
+                name: "Use Preset button is initially disabled",
+                check: () => {
+                    const frame = document.getElementById('formFrame');
+                    const button = frame.contentDocument?.getElementById('usePresetButton');
+                    return button?.disabled === true;
+                }
+            },
+            {
+                name: "Helper text exists below preset button",
+                check: () => {
+                    const frame = document.getElementById('formFrame');
+                    const helperText = frame.contentDocument?.querySelector('.helper-text');
+                    return helperText?.textContent.includes('customize');
+                }
+            },
+            {
+                name: "Preset feedback container exists",
+                check: () => {
+                    const frame = document.getElementById('formFrame');
+                    return !!frame.contentDocument?.getElementById('presetFeedback');
+                }
+            },
+            {
+                name: "Menu helper text exists",
+                check: () => {
+                    const frame = document.getElementById('formFrame');
+                    return !!frame.contentDocument?.querySelector('.menu-helper-text');
+                }
+            },
+            {
+                name: "Form controller module is linked",
+                check: () => {
+                    const frame = document.getElementById('formFrame');
+                    const scripts = frame.contentDocument?.querySelectorAll('script[src*="form-controller"]');
+                    return scripts?.length > 0;
+                }
+            },
+            {
+                name: "Presets module is linked",
+                check: () => {
+                    const frame = document.getElementById('formFrame');
+                    const scripts = frame.contentDocument?.querySelectorAll('script[src*="presets"]');
+                    return scripts?.length > 0;
+                }
+            }
+        ];
+
+        function runTests() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = '';
+            
+            // Wait for iframe to load
+            setTimeout(() => {
+                tests.forEach(test => {
+                    const result = document.createElement('div');
+                    result.className = 'test-item';
+                    
+                    try {
+                        const passed = test.check();
+                        result.classList.add(passed ? 'pass' : 'fail');
+                        result.innerHTML = `
+                            <span class="status">${passed ? '✓ PASS' : '✗ FAIL'}</span>
+                            ${test.name}
+                        `;
+                    } catch (error) {
+                        result.classList.add('fail');
+                        result.innerHTML = `
+                            <span class="status">✗ ERROR</span>
+                            ${test.name}: ${error.message}
+                        `;
+                    }
+                    
+                    resultsDiv.appendChild(result);
+                });
+            }, 1000);
+        }
+
+        function openForm() {
+            window.open('public/index.html', '_blank');
+        }
+
+        // Auto-run tests after iframe loads
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 1500);
+        });
+    </script>
+</body>
+</html>

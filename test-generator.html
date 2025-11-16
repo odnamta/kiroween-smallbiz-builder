@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Module Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .pass { background-color: #d4edda; border-color: #c3e6cb; }
+        .fail { background-color: #f8d7da; border-color: #f5c6cb; }
+        h2 { margin-top: 0; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Generator Module Test</h1>
+    
+    <div id="test-results"></div>
+
+    <!-- Load all required modules -->
+    <script src="public/js/sanitization.js"></script>
+    <script src="public/js/validation.js"></script>
+    <script src="public/js/template-engine.js"></script>
+    <script src="public/js/file-writer.js"></script>
+
+    <script>
+        const results = document.getElementById('test-results');
+
+        function addTest(name, passed, details) {
+            const div = document.createElement('div');
+            div.className = `test-section ${passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `
+                <h2>${passed ? '✓' : '✗'} ${name}</h2>
+                <pre>${details}</pre>
+            `;
+            results.appendChild(div);
+        }
+
+        // Test 1: Check if all required modules are loaded
+        try {
+            const modulesLoaded = 
+                typeof Sanitization !== 'undefined' &&
+                typeof Validation !== 'undefined' &&
+                typeof parseTemplate !== 'undefined' &&
+                typeof createHTMLFile !== 'undefined' &&
+                typeof createCSSFile !== 'undefined' &&
+                typeof createJSONFile !== 'undefined';
+            
+            addTest(
+                'All Required Modules Loaded',
+                modulesLoaded,
+                modulesLoaded ? 
+                    'All modules (Sanitization, Validation, Template Engine, File Writer) are loaded' :
+                    'Some modules are missing'
+            );
+        } catch (error) {
+            addTest('All Required Modules Loaded', false, error.message);
+        }
+
+        // Test 2: Test form data collection structure
+        try {
+            const mockFormData = {
+                business_name: 'Test Business',
+                business_type: 'coffee shop',
+                tagline: 'Test Tagline',
+                short_description: 'Test Description',
+                contact_whatsapp: '1234567890',
+                instagram_handle: 'test_handle',
+                theme_choice: 'classic',
+                menu_items: [
+                    { name: 'Item 1', price: '$10' },
+                    { name: 'Item 2', price: '$20' }
+                ]
+            };
+
+            const sanitized = Sanitization.sanitizeFormData(mockFormData);
+            const hasAllFields = 
+                sanitized.business_name &&
+                sanitized.business_type &&
+                sanitized.tagline &&
+                sanitized.short_description &&
+                sanitized.contact_whatsapp &&
+                sanitized.instagram_handle &&
+                sanitized.theme_choice &&
+                Array.isArray(sanitized.menu_items) &&
+                sanitized.menu_items.length === 2;
+
+            addTest(
+                'Form Data Sanitization',
+                hasAllFields,
+                `Sanitized data structure:\n${JSON.stringify(sanitized, null, 2)}`
+            );
+        } catch (error) {
+            addTest('Form Data Sanitization', false, error.message);
+        }
+
+        // Test 3: Test template processing
+        try {
+            const template = `
+                <h1>{{business_name}}</h1>
+                <p>{{tagline}}</p>
+                <ul>
+                {{#menu_items}}
+                    <li>{{name}} - {{price}}</li>
+                {{/menu_items}}
+                </ul>
+            `;
+
+            const data = {
+                business_name: 'Test Cafe',
+                tagline: 'Best Coffee',
+                menu_items: [
+                    { name: 'Espresso', price: '$3' },
+                    { name: 'Latte', price: '$4' }
+                ]
+            };
+
+            const result = parseTemplate(template, data);
+            const hasBusinessName = result.includes('Test Cafe');
+            const hasTagline = result.includes('Best Coffee');
+            const hasMenuItem = result.includes('Espresso') && result.includes('$3');
+
+            addTest(
+                'Template Processing',
+                hasBusinessName && hasTagline && hasMenuItem,
+                `Template output:\n${result}`
+            );
+        } catch (error) {
+            addTest('Template Processing', false, error.message);
+        }
+
+        // Test 4: Test file creation functions exist
+        try {
+            const functionsExist = 
+                typeof createHTMLFile === 'function' &&
+                typeof createCSSFile === 'function' &&
+                typeof createJSONFile === 'function';
+
+            addTest(
+                'File Creation Functions Available',
+                functionsExist,
+                functionsExist ?
+                    'createHTMLFile, createCSSFile, and createJSONFile are available' :
+                    'Some file creation functions are missing'
+            );
+        } catch (error) {
+            addTest('File Creation Functions Available', false, error.message);
+        }
+
+        // Test 5: Test validation functions
+        try {
+            const validationWorks = 
+                typeof Validation.validateForm === 'function' &&
+                typeof Validation.validateField === 'function' &&
+                Validation.isValidPhone('1234567890') === true &&
+                Validation.isValidPhone('abc') === false &&
+                Validation.isValidInstagram('test_handle') === true &&
+                Validation.isValidInstagram('test@handle') === false;
+
+            addTest(
+                'Validation Functions',
+                validationWorks,
+                validationWorks ?
+                    'All validation functions work correctly' :
+                    'Some validation functions failed'
+            );
+        } catch (error) {
+            addTest('Validation Functions', false, error.message);
+        }
+
+        // Summary
+        const allTests = document.querySelectorAll('.test-section');
+        const passedTests = document.querySelectorAll('.test-section.pass');
+        const summary = document.createElement('div');
+        summary.className = 'test-section';
+        summary.style.backgroundColor = passedTests.length === allTests.length ? '#d4edda' : '#fff3cd';
+        summary.innerHTML = `
+            <h2>Test Summary</h2>
+            <p><strong>${passedTests.length} of ${allTests.length} tests passed</strong></p>
+        `;
+        results.insertBefore(summary, results.firstChild);
+    </script>
+</body>
+</html>

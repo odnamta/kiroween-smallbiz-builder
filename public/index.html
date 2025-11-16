@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code-Free Website Builder</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        label .required {
+            color: #e74c3c;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .theme-option {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .theme-option input[type="radio"] {
+            display: none;
+        }
+
+        .theme-option label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .theme-option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: #f0f4ff;
+            color: #667eea;
+        }
+
+        .theme-option label:hover {
+            border-color: #667eea;
+        }
+
+        .menu-items-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .menu-items-section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .menu-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: flex-start;
+        }
+
+        .menu-item-fields {
+            flex: 1;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .menu-item-field {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .menu-item-field label {
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            align-self: flex-start;
+            margin-top: 1.75rem;
+        }
+
+        .btn-remove:hover {
+            background: #c0392b;
+        }
+
+        .btn-add {
+            background: #27ae60;
+            color: white;
+            margin-top: 0.5rem;
+        }
+
+        .btn-add:hover {
+            background: #229954;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-group.error input,
+        .form-group.error select,
+        .form-group.error textarea,
+        .menu-item-field.error input {
+            border-color: #e74c3c;
+        }
+
+        .form-group.error .error-message,
+        .menu-item-field.error .error-message {
+            display: block;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .menu-item {
+                flex-direction: column;
+            }
+
+            .menu-item-fields {
+                width: 100%;
+            }
+
+            .btn-remove {
+                margin-top: 0.5rem;
+                width: 100%;
+            }
+
+            .theme-option {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-item-fields {
+                flex-direction: column;
+            }
+
+            .menu-item-field {
+                width: 100%;
+            }
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .btn-preset {
+            background: #27ae60;
+            color: white;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-preset:hover:not(:disabled) {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-preset:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .helper-text {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .menu-helper-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Code-Free Website Builder</h1>
+        <p class="subtitle">Create a professional landing page for your business in minutes</p>
+
+        <form id="websiteForm">
+            <!-- Business Name -->
+            <div class="form-group">
+                <label for="business_name">Business Name <span class="required">*</span></label>
+                <input type="text" id="business_name" name="business_name" required maxlength="100">
+                <div class="error-message">Please enter your business name</div>
+            </div>
+
+            <!-- Business Type -->
+            <div class="form-group">
+                <label for="business_type">Business Type <span class="required">*</span></label>
+                <select id="business_type" name="business_type" required>
+                    <option value="">Select your business type</option>
+                    <option value="coffee_shop">Coffee Shop</option>
+                    <option value="bakery">Bakery</option>
+                    <option value="barber_shop">Barber Shop</option>
+                    <option value="food_stall">Food Stall</option>
+                    <option value="laundry_service">Laundry Service</option>
+                    <option value="photographer_creator">Photographer/Creator</option>
+                </select>
+                <div class="error-message">Please select a business type</div>
+            </div>
+
+            <!-- Use Preset Button -->
+            <div class="form-group">
+                <button type="button" id="usePresetButton" class="btn btn-preset" onclick="applyPresetToForm()">
+                    Use Preset for Selected Business Type
+                </button>
+                <p class="helper-text">You can customize these after applying the preset</p>
+            </div>
+
+            <!-- Preset Feedback Message -->
+            <div id="presetFeedback" class="message" style="display: none;"></div>
+
+            <!-- Tagline -->
+            <div class="form-group">
+                <label for="tagline">Tagline <span class="required">*</span></label>
+                <input type="text" id="tagline" name="tagline" required maxlength="150" placeholder="e.g., Your Daily Dose of Happiness">
+                <div class="error-message">Please enter a tagline</div>
+            </div>
+
+            <!-- Short Description -->
+            <div class="form-group">
+                <label for="short_description">Short Description <span class="required">*</span></label>
+                <textarea id="short_description" name="short_description" required maxlength="500" placeholder="Tell customers about your business..."></textarea>
+                <div class="error-message">Please enter a description</div>
+            </div>
+
+            <!-- WhatsApp Contact -->
+            <div class="form-group">
+                <label for="contact_whatsapp">WhatsApp Number <span class="required">*</span></label>
+                <input type="text" id="contact_whatsapp" name="contact_whatsapp" required maxlength="20" placeholder="e.g., 1234567890">
+                <div class="error-message">Please enter a valid WhatsApp number (digits only)</div>
+            </div>
+
+            <!-- Instagram Handle -->
+            <div class="form-group">
+                <label for="instagram_handle">Instagram Handle <span class="required">*</span></label>
+                <input type="text" id="instagram_handle" name="instagram_handle" required maxlength="30" placeholder="e.g., yourbusiness">
+                <div class="error-message">Please enter a valid Instagram handle (letters, numbers, and underscores only)</div>
+            </div>
+
+            <!-- Theme Selector -->
+            <div class="form-group">
+                <label>Choose Your Theme <span class="required">*</span></label>
+                <div class="theme-selector">
+                    <div class="theme-option">
+                        <input type="radio" id="theme_classic" name="theme_choice" value="classic" required>
+                        <label for="theme_classic">
+                            <strong>Classic</strong><br>
+                            Light & Professional
+                        </label>
+                    </div>
+                    <div class="theme-option">
+                        <input type="radio" id="theme_kiroween" name="theme_choice" value="kiroween" required>
+                        <label for="theme_kiroween">
+                            <strong>Kiroween</strong><br>
+                            Dark & Modern
+                        </label>
+                    </div>
+                </div>
+                <div class="error-message">Please select a theme</div>
+            </div>
+
+            <!-- Menu Items Section -->
+            <div class="menu-items-section">
+                <h2>Menu Items <span class="required">*</span></h2>
+                <p class="menu-helper-text" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; display: none;">Optional: Add service items if desired</p>
+                <div id="menuItemsContainer">
+                    <!-- Initial menu item -->
+                    <div class="menu-item" data-item-index="0">
+                        <div class="menu-item-fields">
+                            <div class="menu-item-field">
+                                <label for="menu_item_name_0">Item Name <span class="required">*</span></label>
+                                <input type="text" id="menu_item_name_0" name="menu_item_name[]" required maxlength="100" placeholder="e.g., Espresso">
+                                <div class="error-message">Menu item name is required</div>
+                            </div>
+                            <div class="menu-item-field">
+                                <label for="menu_item_price_0">Price <span class="required">*</span></label>
+                                <input type="text" id="menu_item_price_0" name="menu_item_price[]" required maxlength="20" placeholder="e.g., $3.50">
+                                <div class="error-message">Menu item price is required</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-remove" onclick="removeMenuItem(0)" style="display: none;">Remove</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-add" onclick="addMenuItem()">+ Add Menu Item</button>
+                <div class="error-message" id="menuItemsError">Please add at least one menu item</div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Generate My Website</button>
+            
+            <!-- Generation Message -->
+            <div id="generationMessage" class="message" style="display: none; margin-top: 1rem; padding: 1rem; border-radius: 6px;"></div>
+        </form>
+    </div>
+
+    <!-- Load modules in order: sanitization, validation, template-engine, file-writer, presets, form-controller, generator -->
+    <script src="js/sanitization.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/template-engine.js"></script>
+    <script src="js/file-writer.js"></script>
+    <script type="module" src="js/presets.js"></script>
+    <script type="module" src="js/form-controller.js"></script>
+    <script src="js/generator.js"></script>
+    
+    <!-- Initialize form controller -->
+    <script type="module">
+        import { initializeFormController } from './js/form-controller.js';
+        
+        // Initialize form controller when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeFormController);
+        } else {
+            initializeFormController();
+        }
+    </script>
+    
+    <script>
+        let menuItemCount = 1;
+        const MAX_MENU_ITEMS = 20;
+
+        function addMenuItem() {
+            if (menuItemCount >= MAX_MENU_ITEMS) {
+                alert(`Maximum ${MAX_MENU_ITEMS} menu items allowed`);
+                return;
+            }
+
+            const container = document.getElementById('menuItemsContainer');
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            menuItem.setAttribute('data-item-index', menuItemCount);
+            
+            menuItem.innerHTML = `
+                <div class="menu-item-fields">
+                    <div class="menu-item-field">
+                        <label for="menu_item_name_${menuItemCount}">Item Name <span class="required">*</span></label>
+                        <input type="text" id="menu_item_name_${menuItemCount}" name="menu_item_name[]" required maxlength="100" placeholder="e.g., Cappuccino">
+                        <div class="error-message">Menu item name is required</div>
+                    </div>
+                    <div class="menu-item-field">
+                        <label for="menu_item_price_${menuItemCount}">Price <span class="required">*</span></label>
+                        <input type="text" id="menu_item_price_${menuItemCount}" name="menu_item_price[]" required maxlength="20" placeholder="e.g., $4.50">
+                        <div class="error-message">Menu item price is required</div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-remove" onclick="removeMenuItem(${menuItemCount})">Remove</button>
+            `;
+            
+            container.appendChild(menuItem);
+            menuItemCount++;
+            
+            updateRemoveButtons();
+            attachValidationListeners();
+        }
+
+        function removeMenuItem(index) {
+            const menuItems = document.querySelectorAll('.menu-item');
+            if (menuItems.length <= 1) {
+                alert('You must have at least one menu item');
+                return;
+            }
+            
+            const menuItem = document.querySelector(`.menu-item[data-item-index="${index}"]`);
+            if (menuItem) {
+                menuItem.remove();
+            }
+            
+            updateRemoveButtons();
+        }
+
+        function updateRemoveButtons() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const removeButtons = document.querySelectorAll('.btn-remove');
+            
+            if (menuItems.length === 1) {
+                removeButtons.forEach(btn => btn.style.display = 'none');
+            } else {
+                removeButtons.forEach(btn => btn.style.display = 'block');
+            }
+        }
+
+        function attachValidationListeners() {
+            // Add blur validation for all text inputs, textareas, and selects
+            const fields = document.querySelectorAll('input[type="text"], textarea, select');
+            fields.forEach(field => {
+                field.removeEventListener('blur', handleFieldBlur);
+                field.addEventListener('blur', handleFieldBlur);
+            });
+
+            // Add change validation for radio buttons
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.removeEventListener('change', handleRadioChange);
+                radio.addEventListener('change', handleRadioChange);
+            });
+        }
+
+        function handleFieldBlur(e) {
+            Validation.validateField(e.target);
+        }
+
+        function handleRadioChange(e) {
+            if (e.target.name === 'theme_choice') {
+                const themeGroup = e.target.closest('.form-group');
+                if (themeGroup) {
+                    themeGroup.classList.remove('error');
+                    const errorMsg = themeGroup.querySelector('.error-message');
+                    if (errorMsg) {
+                        errorMsg.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // Note: Form submission is now handled by generator.js module
+
+        // Initialize
+        updateRemoveButtons();
+        attachValidationListeners();
+    </script>
+    
+    <!-- PRESET FUNCTION OVERRIDE -->
+    <script type="module">
+        import { getPreset } from './js/presets.js';
+        
+        window.applyPresetToForm = function() {
+            console.log('applyPresetToForm called');
+            
+            // Get selected business type
+            const businessTypeSelect = document.getElementById('business_type');
+            const businessType = businessTypeSelect ? businessTypeSelect.value : '';
+            console.log('Selected type:', businessType);
+            
+            if (!businessType) {
+                alert('Please select a business type first');
+                return;
+            }
+            
+            // Get preset data
+            const preset = getPreset(businessType);
+            console.log('Preset object:', preset);
+            
+            if (!preset) {
+                alert('No preset available for this business type');
+                return;
+            }
+            
+            // Set tagline
+            const taglineField = document.getElementById('tagline');
+            if (taglineField) {
+                taglineField.value = preset.default_tagline;
+                console.log('Tagline set to:', preset.default_tagline);
+            } else {
+                console.error('Tagline field not found');
+            }
+            
+            // Set description
+            const descriptionField = document.getElementById('short_description');
+            if (descriptionField) {
+                descriptionField.value = preset.default_short_description;
+                console.log('Description set to:', preset.default_short_description);
+            } else {
+                console.error('Description field not found');
+            }
+            
+            // Populate menu items
+            if (preset.default_menu_items && preset.default_menu_items.length > 0) {
+                console.log('Populating menu items:', preset.default_menu_items);
+                
+                const container = document.getElementById('menuItemsContainer');
+                if (container) {
+                    // Clear existing items
+                    container.innerHTML = '';
+                    
+                    // Add each menu item
+                    preset.default_menu_items.forEach((item, index) => {
+                        const menuItem = document.createElement('div');
+                        menuItem.className = 'menu-item';
+                        menuItem.setAttribute('data-item-index', index);
+                        
+                        // Escape HTML to prevent XSS
+                        const escapeName = item.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        const escapePrice = item.price.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        
+                        menuItem.innerHTML = `
+                            <div class="menu-item-fields">
+                                <div class="menu-item-field">
+                                    <label for="menu_item_name_${index}">Item Name <span class="required">*</span></label>
+                                    <input type="text" id="menu_item_name_${index}" name="menu_item_name[]" required maxlength="100" placeholder="e.g., Espresso" value="${escapeName}">
+                                    <div class="error-message">Menu item name is required</div>
+                                </div>
+                                <div class="menu-item-field">
+                                    <label for="menu_item_price_${index}">Price <span class="required">*</span></label>
+                                    <input type="text" id="menu_item_price_${index}" name="menu_item_price[]" required maxlength="20" placeholder="e.g., $3.50" value="${escapePrice}">
+                                    <div class="error-message">Menu item price is required</div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-remove" onclick="removeMenuItem(${index})">Remove</button>
+                        `;
+                        
+                        container.appendChild(menuItem);
+                        console.log(`Added menu item ${index}:`, item.name);
+                    });
+                    
+                    // Update global counter
+                    if (typeof window.menuItemCount !== 'undefined') {
+                        window.menuItemCount = preset.default_menu_items.length;
+                    }
+                    
+                    // Update remove buttons
+                    if (typeof window.updateRemoveButtons === 'function') {
+                        window.updateRemoveButtons();
+                    }
+                    
+                    // Reattach validation
+                    if (typeof window.attachValidationListeners === 'function') {
+                        window.attachValidationListeners();
+                    }
+                    
+                    console.log('Menu items populated successfully');
+                } else {
+                    console.error('Menu container not found');
+                }
+            }
+            
+            alert('Preset applied successfully! You can customize these fields.');
+            console.log('Preset applied successfully');
+        };
+        
+        console.log('Preset function installed');
+    </script>
+</body>
+</html>

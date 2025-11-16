@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 22 Test - Empty Menu Handling</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .output {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .summary {
+            background: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Task 22 Test - Empty Menu Handling</h1>
+    <p>Testing template engine's ability to handle empty menu_items arrays with conditional rendering.</p>
+
+    <div id="results"></div>
+
+    <script src="public/js/sanitization.js"></script>
+    <script src="public/js/template-engine.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        let passCount = 0;
+        let failCount = 0;
+
+        function addResult(title, passed, message, output = '') {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            
+            const heading = document.createElement('h2');
+            heading.textContent = title;
+            section.appendChild(heading);
+            
+            const result = document.createElement('div');
+            result.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            result.textContent = `${passed ? '✓ PASS' : '✗ FAIL'}: ${message}`;
+            section.appendChild(result);
+            
+            if (output) {
+                const outputDiv = document.createElement('div');
+                outputDiv.className = 'output';
+                outputDiv.textContent = output;
+                section.appendChild(outputDiv);
+            }
+            
+            results.appendChild(section);
+            
+            if (passed) passCount++;
+            else failCount++;
+        }
+
+        // Test template with conditional sections
+        const testTemplate = `
+<!DOCTYPE html>
+<html>
+<head><title>{{business_name}}</title></head>
+<body>
+    <h1>{{business_name}}</h1>
+    
+    {{?hasItems:menu_items}}
+    <section class="menu">
+        <h2>Our Menu</h2>
+        <ul>
+            {{#menu_items}}
+            <li>{{name}} - {{price}}</li>
+            {{/menu_items}}
+        </ul>
+    </section>
+    {{/hasItems:menu_items}}
+    
+    {{?empty:menu_items}}
+    <section class="menu">
+        <h2>Our Services</h2>
+        <p>Contact us for custom pricing and service details.</p>
+    </section>
+    {{/empty:menu_items}}
+</body>
+</html>`;
+
+        // Test 1: Empty menu_items array
+        try {
+            const dataEmpty = {
+                business_name: "Test Business",
+                menu_items: []
+            };
+            
+            const resultEmpty = parseTemplate(testTemplate, dataEmpty);
+            
+            const hasMenuSection = resultEmpty.includes('<section class="menu">');
+            const hasEmptyMessage = resultEmpty.includes('Contact us for custom pricing');
+            const hasMenuList = resultEmpty.includes('<ul>');
+            const hasOurMenu = resultEmpty.includes('Our Menu');
+            const hasOurServices = resultEmpty.includes('Our Services');
+            
+            const passed = hasMenuSection && hasEmptyMessage && !hasMenuList && !hasOurMenu && hasOurServices;
+            
+            addResult(
+                'Test 1: Empty menu_items array',
+                passed,
+                passed 
+                    ? 'Template correctly shows fallback message for empty menu'
+                    : 'Template did not handle empty menu correctly',
+                `Generated HTML:\n${resultEmpty.substring(0, 500)}...`
+            );
+        } catch (error) {
+            addResult('Test 1: Empty menu_items array', false, `Error: ${error.message}`);
+        }
+
+        // Test 2: Populated menu_items array
+        try {
+            const dataPopulated = {
+                business_name: "Test Business",
+                menu_items: [
+                    { name: "Coffee", price: "Rp 15,000" },
+                    { name: "Tea", price: "Rp 10,000" }
+                ]
+            };
+            
+            const resultPopulated = parseTemplate(testTemplate, dataPopulated);
+            
+            const hasMenuSection = resultPopulated.includes('<section class="menu">');
+            const hasMenuList = resultPopulated.includes('<ul>');
+            const hasCoffee = resultPopulated.includes('Coffee');
+            const hasTea = resultPopulated.includes('Tea');
+            const hasEmptyMessage = resultPopulated.includes('Contact us for custom pricing');
+            const hasOurMenu = resultPopulated.includes('Our Menu');
+            const hasOurServices = resultPopulated.includes('Our Services');
+            
+            const passed = hasMenuSection && hasMenuList && hasCoffee && hasTea && !hasEmptyMessage && hasOurMenu && !hasOurServices;
+            
+            addResult(
+                'Test 2: Populated menu_items array',
+                passed,
+                passed 
+                    ? 'Template correctly displays menu items'
+                    : 'Template did not display menu items correctly',
+                `Generated HTML:\n${resultPopulated.substring(0, 500)}...`
+            );
+        } catch (error) {
+            addResult('Test 2: Populated menu_items array', false, `Error: ${error.message}`);
+        }
+
+        // Test 3: Load and test actual base template with empty menu
+        try {
+            fetch('public/templates/base-template.html')
+                .then(response => response.text())
+                .then(baseTemplate => {
+                    const dataEmpty = {
+                        business_name: "Empty Menu Business",
+                        tagline: "Test Tagline",
+                        short_description: "Test description",
+                        contact_whatsapp: "628123456789",
+                        instagram_handle: "testbusiness",
+                        menu_items: []
+                    };
+                    
+                    const result = parseTemplate(baseTemplate, dataEmpty);
+                    
+                    const hasMenuSection = result.includes('class="menu"');
+                    const hasEmptyMessage = result.includes('Contact us for custom pricing');
+                    const hasMenuList = result.includes('class="menu-list"');
+                    
+                    const passed = hasMenuSection && hasEmptyMessage && !hasMenuList;
+                    
+                    addResult(
+                        'Test 3: Base template with empty menu',
+                        passed,
+                        passed 
+                            ? 'Base template correctly handles empty menu'
+                            : 'Base template did not handle empty menu correctly',
+                        `Generated HTML (first 800 chars):\n${result.substring(0, 800)}...`
+                    );
+                    
+                    // Test 4: Load and test actual base template with populated menu
+                    const dataPopulated = {
+                        business_name: "Full Menu Business",
+                        tagline: "Test Tagline",
+                        short_description: "Test description",
+                        contact_whatsapp: "628123456789",
+                        instagram_handle: "testbusiness",
+                        menu_items: [
+                            { name: "Item 1", price: "Rp 20,000" },
+                            { name: "Item 2", price: "Rp 25,000" }
+                        ]
+                    };
+                    
+                    const resultPopulated = parseTemplate(baseTemplate, dataPopulated);
+                    
+                    const hasMenuSectionPop = resultPopulated.includes('class="menu"');
+                    const hasMenuListPop = resultPopulated.includes('class="menu-list"');
+                    const hasItem1 = resultPopulated.includes('Item 1');
+                    const hasItem2 = resultPopulated.includes('Item 2');
+                    const hasEmptyMessagePop = resultPopulated.includes('Contact us for custom pricing');
+                    
+                    const passedPop = hasMenuSectionPop && hasMenuListPop && hasItem1 && hasItem2 && !hasEmptyMessagePop;
+                    
+                    addResult(
+                        'Test 4: Base template with populated menu',
+                        passedPop,
+                        passedPop 
+                            ? 'Base template correctly displays menu items'
+                            : 'Base template did not display menu items correctly',
+                        `Generated HTML (first 800 chars):\n${resultPopulated.substring(0, 800)}...`
+                    );
+                    
+                    // Add summary
+                    const summary = document.createElement('div');
+                    summary.className = 'summary';
+                    summary.innerHTML = `
+                        <h2>Test Summary</h2>
+                        <p><strong>Total Tests:</strong> ${passCount + failCount}</p>
+                        <p><strong>Passed:</strong> ${passCount}</p>
+                        <p><strong>Failed:</strong> ${failCount}</p>
+                        <p><strong>Success Rate:</strong> ${((passCount / (passCount + failCount)) * 100).toFixed(1)}%</p>
+                    `;
+                    results.appendChild(summary);
+                })
+                .catch(error => {
+                    addResult('Test 3 & 4: Base template tests', false, `Error loading template: ${error.message}`);
+                });
+        } catch (error) {
+            addResult('Test 3 & 4: Base template tests', false, `Error: ${error.message}`);
+        }
+    </script>
+</body>
+</html>

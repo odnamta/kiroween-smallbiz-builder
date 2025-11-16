@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        h2 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Validation Module Test</h1>
+    
+    <div id="testResults"></div>
+
+    <script src="public/js/validation.js"></script>
+    <script>
+        const results = [];
+
+        function runTest(name, testFn) {
+            try {
+                const result = testFn();
+                results.push({ name, passed: result, error: null });
+            } catch (error) {
+                results.push({ name, passed: false, error: error.message });
+            }
+        }
+
+        // Test phone validation
+        runTest('Valid phone number (digits only)', () => {
+            return Validation.isValidPhone('1234567890') === true;
+        });
+
+        runTest('Invalid phone number (with spaces)', () => {
+            return Validation.isValidPhone('123 456 7890') === false;
+        });
+
+        runTest('Invalid phone number (with dashes)', () => {
+            return Validation.isValidPhone('123-456-7890') === false;
+        });
+
+        runTest('Invalid phone number (with letters)', () => {
+            return Validation.isValidPhone('123abc7890') === false;
+        });
+
+        // Test Instagram validation
+        runTest('Valid Instagram handle (alphanumeric)', () => {
+            return Validation.isValidInstagram('myhandle123') === true;
+        });
+
+        runTest('Valid Instagram handle (with underscore)', () => {
+            return Validation.isValidInstagram('my_handle_123') === true;
+        });
+
+        runTest('Invalid Instagram handle (with dash)', () => {
+            return Validation.isValidInstagram('my-handle') === false;
+        });
+
+        runTest('Invalid Instagram handle (with space)', () => {
+            return Validation.isValidInstagram('my handle') === false;
+        });
+
+        runTest('Invalid Instagram handle (with special chars)', () => {
+            return Validation.isValidInstagram('my@handle!') === false;
+        });
+
+        // Display results
+        const resultsDiv = document.getElementById('testResults');
+        let passCount = 0;
+        let failCount = 0;
+
+        results.forEach(result => {
+            const div = document.createElement('div');
+            div.className = `test-result ${result.passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `
+                <strong>${result.passed ? '✓' : '✗'} ${result.name}</strong>
+                ${result.error ? `<br>Error: ${result.error}` : ''}
+            `;
+            resultsDiv.appendChild(div);
+
+            if (result.passed) passCount++;
+            else failCount++;
+        });
+
+        const summary = document.createElement('div');
+        summary.className = 'test-section';
+        summary.innerHTML = `
+            <h2>Test Summary</h2>
+            <p><strong>Total Tests:</strong> ${results.length}</p>
+            <p><strong>Passed:</strong> ${passCount}</p>
+            <p><strong>Failed:</strong> ${failCount}</p>
+        `;
+        resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+
+        console.log('Validation tests completed:', { passCount, failCount, total: results.length });
+    </script>
+</body>
+</html>

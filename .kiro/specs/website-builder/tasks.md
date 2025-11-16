@@ -1,0 +1,280 @@
+# Implementation Plan
+
+- [x] 1. Set up project structure and base files
+  - Create /public directory with index.html entry point
+  - Create /public/js directory for JavaScript modules
+  - Create /public/templates directory for HTML templates
+  - Create /public/themes directory for CSS theme files
+  - Create /generated directory for output files
+  - Add .gitkeep files to maintain empty directories
+  - _Requirements: 6.4_
+
+- [x] 2. Create input form interface
+  - Build HTML form structure in /public/index.html with all required input fields
+  - Add text inputs for business_name, tagline, contact_whatsapp, instagram_handle
+  - Add dropdown/select for business_type with options: coffee shop, bakery, barber
+  - Add textarea for short_description
+  - Add theme selector with radio buttons for classic and kiroween options
+  - Add dynamic menu items section with initial name and price fields
+  - Add "Add Menu Item" button and "Remove" buttons for menu items
+  - Add form submit button
+  - Include basic CSS styling for form usability and layout
+  - Implement mobile-responsive form layout with proper spacing
+  - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 8.1, 8.2, 8.3, 8.4, 8.5_
+
+- [x] 3. Implement dynamic menu item functionality
+  - Write JavaScript to handle "Add Menu Item" button clicks
+  - Create function to dynamically generate new menu item input fields (name and price)
+  - Implement remove functionality for individual menu items
+  - Add event listeners for add/remove buttons
+  - Ensure menu item fields have unique IDs for proper form data collection
+  - Set minimum of 1 menu item and maximum of 20 menu items
+  - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
+
+- [x] 4. Create form validation module
+  - Write validation function to check all required fields are filled
+  - Implement phone number format validation for contact_whatsapp (digits only)
+  - Implement Instagram handle validation (alphanumeric and underscore only)
+  - Add validation to ensure at least one menu item exists
+  - Create error display functions to show inline error messages
+  - Add error clearing function to remove error states
+  - Implement focus management to highlight first error field
+  - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 8.3_
+
+- [x] 5. Build base HTML template
+  - Create /public/templates/base-template.html with semantic HTML structure
+  - Add header section with placeholders for business_name and tagline
+  - Add about section with placeholder for short_description
+  - Add menu section with loop structure for menu_items
+  - Add contact section with WhatsApp and Instagram link placeholders
+  - Add footer with copyright placeholder
+  - Include meta tags for responsive viewport and charset
+  - Use semantic HTML5 elements (header, main, section, footer)
+  - Add ARIA labels and accessibility attributes
+  - _Requirements: 3.3, 3.4, 3.5, 3.6, 3.7, 3.8_
+
+- [x] 6. Create theme CSS files
+- [x] 6.1 Implement Classic theme
+  - Create /public/themes/classic.css with light, professional styling
+  - Define color palette with blues and grays
+  - Use serif fonts for headers and sans-serif for body
+  - Add subtle shadows and borders for depth
+  - Implement mobile-first responsive rules with breakpoints at 768px and 1024px
+  - Ensure all touch targets are minimum 44px
+  - Maintain 4.5:1 color contrast ratio for accessibility
+  - _Requirements: 3.1, 4.1, 4.2, 4.3, 4.4_
+
+- [x] 6.2 Implement Kiroween theme
+  - Create /public/themes/kiroween.css with dark, modern styling
+  - Define color palette with dark backgrounds and oranges/purples
+  - Use sans-serif fonts throughout
+  - Add bold accent colors and Halloween-inspired elements
+  - Implement mobile-first responsive rules with breakpoints at 768px and 1024px
+  - Ensure all touch targets are minimum 44px
+  - Maintain 4.5:1 color contrast ratio for accessibility
+  - _Requirements: 3.2, 4.1, 4.2, 4.3, 4.4_
+
+- [x] 7. Build template engine module
+  - Create /public/js/template-engine.js file
+  - Implement parseTemplate function to process template with data
+  - Write replacePlaceholders function for simple {{placeholder}} syntax
+  - Implement processLoop function for {{#menu_items}} array iteration
+  - Add HTML sanitization to prevent XSS attacks
+  - Handle nested data structures for menu items
+  - Export functions for use in generator module
+  - _Requirements: 2.2, 2.3_
+
+- [x] 8. Create file writer utility module
+  - Create /public/js/file-writer.js file
+  - Implement createFile function to generate Blob objects
+  - Write downloadFile function to trigger browser downloads
+  - Create specialized functions: createHTMLFile, createCSSFile, createJSONFile
+  - Handle MIME types correctly for each file type
+  - Implement proper filename generation
+  - Add error handling for browser compatibility issues
+  - _Requirements: 2.4, 2.5, 2.6_
+
+- [x] 9. Implement main generator script
+  - Create /public/js/generator.js as the main orchestration module
+  - Write handleFormSubmit function to capture form submission event
+  - Implement form data collection from all input fields and menu items
+  - Add call to validation module before processing
+  - Implement loadTemplate function to fetch base-template.html
+  - Write generateCSS function to load appropriate theme file based on theme_choice
+  - Implement injectData function using template engine
+  - Create generateWebsite function to coordinate all generation steps
+  - Add createOutputFiles function to generate index.html, styles.css, and menu.json
+  - Implement file overwriting by triggering new downloads
+  - Add user feedback messages for success and errors
+  - Wire up form submit event listener on page load
+  - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 5.1, 5.2, 5.3_
+
+- [x] 10. Add input sanitization and security
+  - Implement sanitizeHTML function to escape special characters
+  - Create sanitizeURL function for WhatsApp and Instagram links
+  - Apply sanitization to all user inputs before template injection
+  - Validate URL formats to prevent malicious links
+  - Add input length limits to prevent abuse
+  - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8_
+
+- [x] 11. Integrate all modules and test generation flow
+  - Link all JavaScript modules in /public/index.html
+  - Test complete flow: form fill → validation → generation → file download
+  - Verify all three files (index.html, styles.css, menu.json) are created
+  - Test with Classic theme and verify correct CSS is applied
+  - Test with Kiroween theme and verify correct CSS is applied
+  - Verify all user data appears correctly in generated HTML
+  - Test menu items render properly in generated page
+  - Verify WhatsApp link formats as https://wa.me/{phone}
+  - Verify Instagram link formats as https://instagram.com/{handle}
+  - Test file overwriting by generating multiple times
+  - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 5.1, 5.2, 5.3_
+
+- [x] 12. Test responsive design across devices
+  - Test form layout on mobile viewport (320px width)
+  - Test form layout on tablet viewport (768px width)
+  - Test form layout on desktop viewport (1024px+ width)
+  - Open generated website and test on mobile viewport
+  - Open generated website and test on tablet viewport
+  - Open generated website and test on desktop viewport
+  - Verify touch targets are at least 44px on all viewports
+  - Test in Chrome, Firefox, and Safari browsers
+  - _Requirements: 4.1, 4.2, 4.3, 4.4_
+
+- [x] 13. Update steering documentation
+  - Update .kiro/steering/tech.md with HTML/CSS/JavaScript stack details
+  - Add build commands and development instructions to tech.md
+  - Update .kiro/steering/structure.md with /public and /generated directory descriptions
+  - Document naming conventions for JavaScript modules in structure.md
+  - Update .kiro/steering/product.md with website builder purpose and key features
+  - Add target users section describing small business owners
+  - _Requirements: 6.1, 6.2, 6.3_
+
+- [x] 14. Create Agent Hook for auto-generation
+  - Create .kiro/hooks directory if it doesn't exist
+  - Create auto-generate.json hook configuration file
+  - Configure hook as manual trigger type
+  - Set hook to execute generator script with current form data
+  - Add descriptive name and description for the hook
+  - Test hook execution from Kiro IDE
+  - _Requirements: 2.1_
+
+- [x] 15. Create MCP tool for programmatic generation
+  - Create MCP tool schema file for generate_website tool
+  - Define input schema with all FormData properties
+  - Set required fields in schema
+  - Define enum for theme_choice (classic, kiroween)
+  - Implement tool handler to call generator functions
+  - Return generated file paths as tool output
+  - Test MCP tool with sample business data
+  - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
+
+- [x] 16. Implement business presets module
+  - Create /public/js/presets.js file for preset data and functions
+  - Define businessPresets object keyed by business_type
+  - Add coffee_shop preset with tagline, description, and menu items (coffee-focused)
+  - Add bakery preset with tagline, description, and menu items (baked goods)
+  - Add barber_shop preset with tagline, description, and service items (grooming)
+  - Add food_stall preset emphasizing affordable Southeast Asian food with menu items
+  - Add laundry_service preset emphasizing fast turnaround and clean clothes with service items
+  - Add photographer_creator preset emphasizing content creation, photo packages, and sessions
+  - Implement getPreset(businessType) function to retrieve preset by type
+  - Implement hasMenuItems(businessType) function to check if preset includes menu items
+  - Export preset functions for use in form controller
+  - Use Indonesian Rupiah (Rp) pricing for all presets
+  - _Requirements: 9.1, 9.2, 9.8, 9.9, 9.10, 9.11, 9.12, 9.13_
+
+- [x] 17. Create form controller for preset integration
+  - Create /public/js/form-controller.js file for form interaction logic
+  - Implement handlePresetButtonClick function to process "Use Preset" clicks
+  - Write populateFormWithPreset function to fill tagline field with default_tagline
+  - Implement logic to fill short_description field with default_short_description
+  - Create clearMenuItems function to remove existing menu item fields
+  - Write addMenuItemsFromPreset function to populate menu items from preset
+  - Add toggleMenuSection function to show/hide menu section based on business type
+  - Implement visual feedback showing "Preset applied. You can customize these fields."
+  - Ensure all populated fields remain editable after preset application
+  - Add event listener for business_type dropdown changes
+  - Wire up "Use Preset" button to handlePresetButtonClick
+  - Test preset application for all 6 business types
+  - _Requirements: 9.3, 9.4, 9.5, 9.6, 9.7_
+
+- [x] 18. Update form UI for preset functionality
+  - Update /public/index.html to add "Use Preset" button near business_type dropdown
+  - Update business_type dropdown options to include all 6 types: coffee_shop, bakery, barber_shop, food_stall, laundry_service, photographer_creator
+  - Add helper text element displaying "You can customize these after applying the preset"
+  - Position "Use Preset" button to be visible and accessible
+  - Add CSS styling for "Use Preset" button (consistent with form theme)
+  - Add helper text for menu section: "Optional: Add service items if desired"
+  - Implement button enable/disable state based on business_type selection
+  - Add success message container for preset application feedback
+  - Link form-controller.js and presets.js modules in HTML
+  - Test button visibility and interaction on mobile and desktop
+  - _Requirements: 9.2, 9.3, 9.6, 1.2_
+
+- [x] 19. Update validation for optional menu items
+  - Modify validation.js to allow 0 menu items (remove minimum requirement)
+  - Update validateFormData function to skip menu validation for non-menu businesses
+  - Remove "Please add at least one menu item" error for businesses without menu items
+  - Ensure validation still works correctly for businesses with menu items
+  - Test validation with empty menu_items array
+  - Test validation with populated menu_items array
+  - Verify form submission works with 0 menu items
+  - _Requirements: 9.4, 9.5_
+
+- [x] 20. Implement deployment helper functionality
+  - Update /public/js/file-writer.js to add createDeploymentInstructions function
+  - Write deployment instructions template explaining generated files (index.html, styles.css, menu.json)
+  - Add step-by-step Netlify drag-and-drop deployment instructions
+  - Add step-by-step GitHub Pages deployment instructions
+  - Include instructions for other static hosts (Vercel, Cloudflare Pages)
+  - Add section on updating websites by regenerating and re-uploading
+  - Add troubleshooting tips (upload all files, keep filenames unchanged)
+  - Implement createTextFile function to generate .txt files
+  - Use simple, non-technical language appropriate for small business owners
+  - Format instructions with clear sections and numbered steps
+  - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7, 2.7_
+
+- [x] 21. Integrate deployment instructions into generation flow
+  - Update generator.js to call createDeploymentInstructions after generating HTML/CSS/JSON
+  - Modify createOutputFiles function to accept deploymentInstructions parameter
+  - Add deployment-instructions.txt to the list of files written to /generated directory
+  - Ensure deployment-instructions.txt downloads along with other files
+  - Test that all 4 files (HTML, CSS, JSON, TXT) are created on generation
+  - Verify deployment-instructions.txt contains correct content
+  - Test complete generation flow with deployment instructions included
+  - _Requirements: 2.7, 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7_
+
+- [x] 22. Update template engine for empty menu handling
+  - Modify template-engine.js to handle empty menu_items arrays
+  - Implement conditional rendering for menu section when menu_items.length === 0
+  - Add fallback text "Contact us for custom pricing" when no menu items exist
+  - Alternatively, hide menu section entirely if no items provided
+  - Test template processing with empty menu_items array
+  - Test template processing with populated menu_items array
+  - Verify generated HTML displays correctly for both cases
+  - _Requirements: 3.8_
+
+- [x] 23. End-to-end testing with presets and deployment helper
+  - Test complete flow: select business_type → click "Use Preset" → customize → generate
+  - Test preset application for coffee_shop with Classic theme
+  - Test preset application for food_stall with Kiroween theme
+  - Test preset application for laundry_service (non-menu business)
+  - Test preset application for photographer_creator (non-menu business)
+  - Verify all 4 files download correctly (HTML, CSS, JSON, TXT)
+  - Open deployment-instructions.txt and verify content is clear and accurate
+  - Test editing preset values before generation
+  - Test generation without using preset (manual entry)
+  - Verify generated websites display correctly for all business types
+  - Test responsive design of generated sites on mobile, tablet, desktop
+  - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 10.7_
+
+- [x] 24. Update documentation for new features
+  - Update .kiro/steering/product.md to document preset feature
+  - Add description of 6 supported business types to product.md
+  - Document deployment helper feature in product.md
+  - Update .kiro/steering/structure.md to include presets.js and form-controller.js
+  - Update .kiro/steering/tech.md with new module descriptions
+  - Add preset usage instructions to any user-facing documentation
+  - Document deployment-instructions.txt file in structure.md
+  - _Requirements: 9.1, 9.2, 10.1_

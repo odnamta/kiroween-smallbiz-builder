@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 19 - Validation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .test-result.pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-result.fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group.error input,
+        .form-group.error textarea,
+        .form-group.error select {
+            border-color: #dc3545;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            display: none;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .menu-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .menu-item-field {
+            margin-bottom: 10px;
+        }
+        .menu-item-field.error input {
+            border-color: #dc3545;
+        }
+        #menuItemsError {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Task 19: Validation Test - Optional Menu Items</h1>
+    
+    <div class="test-section">
+        <h2>Test Form</h2>
+        <form id="testForm">
+            <div class="form-group">
+                <label>Business Name *</label>
+                <input type="text" name="business_name" id="business_name" required>
+                <div class="error-message">This field is required</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Business Type *</label>
+                <select name="business_type" id="business_type" required>
+                    <option value="">Select type</option>
+                    <option value="coffee_shop">Coffee Shop</option>
+                    <option value="bakery">Bakery</option>
+                    <option value="barber_shop">Barber Shop</option>
+                    <option value="food_stall">Food Stall</option>
+                    <option value="laundry_service">Laundry Service</option>
+                    <option value="photographer_creator">Photographer/Creator</option>
+                </select>
+                <div class="error-message">This field is required</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Tagline *</label>
+                <input type="text" name="tagline" id="tagline" required>
+                <div class="error-message">This field is required</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Short Description *</label>
+                <textarea name="short_description" id="short_description" required></textarea>
+                <div class="error-message">This field is required</div>
+            </div>
+            
+            <div class="form-group">
+                <label>WhatsApp Number *</label>
+                <input type="text" name="contact_whatsapp" id="contact_whatsapp" required>
+                <div class="error-message">This field is required</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Instagram Handle *</label>
+                <input type="text" name="instagram_handle" id="instagram_handle" required>
+                <div class="error-message">This field is required</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Theme *</label>
+                <div class="theme-selector">
+                    <label><input type="radio" name="theme_choice" value="classic"> Classic</label>
+                    <label><input type="radio" name="theme_choice" value="kiroween"> Kiroween</label>
+                </div>
+                <div class="error-message">Please select a theme</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Menu Items</label>
+                <div id="menuItemsContainer"></div>
+                <div id="menuItemsError">Please add at least one menu item</div>
+                <button type="button" id="addMenuItem">Add Menu Item</button>
+            </div>
+            
+            <button type="submit">Validate Form</button>
+        </form>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="testResults"></div>
+        <button onclick="runAllTests()">Run All Tests</button>
+    </div>
+
+    <script src="public/js/validation.js"></script>
+    <script>
+        let menuItemCounter = 0;
+
+        // Add menu item functionality
+        document.getElementById('addMenuItem').addEventListener('click', function() {
+            menuItemCounter++;
+            const container = document.getElementById('menuItemsContainer');
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            menuItem.innerHTML = `
+                <div class="menu-item-field">
+                    <label>Item Name</label>
+                    <input type="text" name="menu_item_name[]" required>
+                    <div class="error-message">Menu item name is required</div>
+                </div>
+                <div class="menu-item-field">
+                    <label>Price</label>
+                    <input type="text" name="menu_item_price[]" required>
+                    <div class="error-message">Menu item price is required</div>
+                </div>
+                <button type="button" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(menuItem);
+        });
+
+        // Form submission handler
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const isValid = Validation.validateForm(this);
+            const result = document.createElement('div');
+            result.className = 'test-result ' + (isValid ? 'pass' : 'fail');
+            result.textContent = 'Manual validation: ' + (isValid ? 'PASSED' : 'FAILED');
+            document.getElementById('testResults').appendChild(result);
+        });
+
+        // Automated tests
+        function addTestResult(testName, passed, message) {
+            const result = document.createElement('div');
+            result.className = 'test-result ' + (passed ? 'pass' : 'fail');
+            result.innerHTML = `<strong>${testName}:</strong> ${passed ? 'PASSED' : 'FAILED'}${message ? ' - ' + message : ''}`;
+            document.getElementById('testResults').appendChild(result);
+        }
+
+        function fillBasicFormData() {
+            document.getElementById('business_name').value = 'Test Business';
+            document.getElementById('business_type').value = 'laundry_service';
+            document.getElementById('tagline').value = 'Test Tagline';
+            document.getElementById('short_description').value = 'Test description';
+            document.getElementById('contact_whatsapp').value = '628123456789';
+            document.getElementById('instagram_handle').value = 'test_business';
+            document.querySelector('input[name="theme_choice"][value="classic"]').checked = true;
+        }
+
+        function clearForm() {
+            document.getElementById('testForm').reset();
+            document.getElementById('menuItemsContainer').innerHTML = '';
+            Validation.clearAllErrors();
+        }
+
+        function runAllTests() {
+            document.getElementById('testResults').innerHTML = '';
+            
+            // Test 1: Validation with 0 menu items should pass
+            clearForm();
+            fillBasicFormData();
+            const test1Result = Validation.validateForm(document.getElementById('testForm'));
+            addTestResult('Test 1: Validation with 0 menu items', test1Result, 'Should allow empty menu');
+            
+            // Test 2: Validation with populated menu items should pass
+            clearForm();
+            fillBasicFormData();
+            document.getElementById('addMenuItem').click();
+            document.querySelector('input[name="menu_item_name[]"]').value = 'Test Item';
+            document.querySelector('input[name="menu_item_price[]"]').value = 'Rp 10,000';
+            const test2Result = Validation.validateForm(document.getElementById('testForm'));
+            addTestResult('Test 2: Validation with populated menu items', test2Result, 'Should validate menu items correctly');
+            
+            // Test 3: Validation with incomplete menu items should fail
+            clearForm();
+            fillBasicFormData();
+            document.getElementById('addMenuItem').click();
+            document.querySelector('input[name="menu_item_name[]"]').value = 'Test Item';
+            document.querySelector('input[name="menu_item_price[]"]').value = ''; // Empty price
+            const test3Result = !Validation.validateForm(document.getElementById('testForm'));
+            addTestResult('Test 3: Validation with incomplete menu items', test3Result, 'Should fail when menu item fields are incomplete');
+            
+            // Test 4: validateMenuItems() with 0 items should return true
+            clearForm();
+            const test4Result = Validation.validateMenuItems();
+            addTestResult('Test 4: validateMenuItems() with 0 items', test4Result === true, 'Should return true for empty menu');
+            
+            // Test 5: validateMenuItems() with valid items should return true
+            clearForm();
+            document.getElementById('addMenuItem').click();
+            document.querySelector('input[name="menu_item_name[]"]').value = 'Valid Item';
+            document.querySelector('input[name="menu_item_price[]"]').value = 'Rp 15,000';
+            const test5Result = Validation.validateMenuItems();
+            addTestResult('Test 5: validateMenuItems() with valid items', test5Result === true, 'Should return true for valid menu items');
+            
+            // Test 6: Menu error message should not display for 0 items
+            clearForm();
+            Validation.validateMenuItems();
+            const menuError = document.getElementById('menuItemsError');
+            const test6Result = menuError.style.display === 'none';
+            addTestResult('Test 6: Menu error message hidden for 0 items', test6Result, 'Error message should not display');
+            
+            // Test 7: Form submission with laundry_service and 0 menu items
+            clearForm();
+            fillBasicFormData();
+            document.getElementById('business_type').value = 'laundry_service';
+            const test7Result = Validation.validateForm(document.getElementById('testForm'));
+            addTestResult('Test 7: Laundry service with 0 menu items', test7Result, 'Should pass validation');
+            
+            // Test 8: Form submission with photographer_creator and 0 menu items
+            clearForm();
+            fillBasicFormData();
+            document.getElementById('business_type').value = 'photographer_creator';
+            const test8Result = Validation.validateForm(document.getElementById('testForm'));
+            addTestResult('Test 8: Photographer with 0 menu items', test8Result, 'Should pass validation');
+            
+            // Clean up
+            clearForm();
+        }
+
+        // Run tests on page load
+        window.addEventListener('load', function() {
+            setTimeout(runAllTests, 500);
+        });
+    </script>
+</body>
+</html>

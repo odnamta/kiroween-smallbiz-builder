@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Preset Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; font-size: 14px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 10px 5px 10px 0; }
+        #console { background: #f5f5f5; padding: 15px; border-radius: 5px; font-family: monospace; 
+                   white-space: pre-wrap; max-height: 400px; overflow-y: auto; margin-top: 20px; }
+        .menu-item { border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Preset Button Debug Test</h1>
+    
+    <div class="form-group">
+        <label for="business_type">Business Type:</label>
+        <select id="business_type">
+            <option value="">Select business type</option>
+            <option value="coffee_shop">Coffee Shop</option>
+            <option value="bakery">Bakery</option>
+            <option value="barber_shop">Barber Shop</option>
+        </select>
+    </div>
+    
+    <button type="button" id="usePresetButton">Use Preset</button>
+    
+    <div class="form-group">
+        <label for="tagline">Tagline:</label>
+        <input type="text" id="tagline">
+    </div>
+    
+    <div class="form-group">
+        <label for="short_description">Description:</label>
+        <textarea id="short_description" rows="3"></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label>Menu Items:</label>
+        <div id="menuItemsContainer"></div>
+    </div>
+    
+    <div id="presetFeedback"></div>
+    
+    <h2>Console Output:</h2>
+    <div id="console">Waiting for interactions...</div>
+    
+    <script type="module">
+        // Capture console output
+        const consoleDiv = document.getElementById('console');
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            consoleDiv.textContent += args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg
+            ).join(' ') + '\n';
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            consoleDiv.textContent += 'ERROR: ' + args.join(' ') + '\n';
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        };
+        
+        // Import and test
+        import { initializeFormController } from './public/js/form-controller.js';
+        
+        console.log('=== Test Started ===');
+        console.log('Initializing form controller...');
+        initializeFormController();
+        console.log('=== Ready for testing ===\n');
+    </script>
+</body>
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 23 - End-to-End Testing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        .test-case {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #2196F3;
+        }
+        .test-case h3 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .test-results {
+            margin-top: 20px;
+        }
+        .summary {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .checklist {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .checklist li {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-left: 3px solid #ddd;
+        }
+        .checklist li.pass {
+            border-left-color: #4CAF50;
+            background: #e8f5e9;
+        }
+        .checklist li.fail {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        iframe {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .viewport-test {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .viewport-frame {
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .viewport-label {
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Task 23: End-to-End Testing with Presets and Deployment Helper</h1>
+    
+    <div class="test-section">
+        <h2>Test Overview</h2>
+        <p>This comprehensive test validates the complete website builder flow including:</p>
+        <ul>
+            <li>Preset application for all 6 business types</li>
+            <li>Theme selection (Classic and Kiroween)</li>
+            <li>File generation (HTML, CSS, JSON, TXT)</li>
+            <li>Deployment instructions content</li>
+            <li>Manual entry without presets</li>
+            <li>Responsive design validation</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Automated Test Cases</h2>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="clearResults()">Clear Results</button>
+        <div id="test-results" class="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Manual Test Cases</h2>
+        <p>Open the main application to perform manual testing:</p>
+        <button onclick="window.open('public/index.html', '_blank')">Open Website Builder</button>
+        
+        <div class="test-case">
+            <h3>Manual Test Checklist</h3>
+            <ul class="checklist" id="manual-checklist">
+                <li>Select coffee_shop → Click "Use Preset" → Verify fields populate</li>
+                <li>Select Classic theme → Generate → Verify 4 files download</li>
+                <li>Select food_stall → Click "Use Preset" → Select Kiroween theme → Generate</li>
+                <li>Select laundry_service → Click "Use Preset" → Verify menu items populate</li>
+                <li>Select photographer_creator → Click "Use Preset" → Verify menu items populate</li>
+                <li>Edit preset values before generation → Verify custom values appear in output</li>
+                <li>Clear form → Fill manually without preset → Generate successfully</li>
+                <li>Open deployment-instructions.txt → Verify content is clear and accurate</li>
+                <li>Open generated index.html → Test on mobile viewport (320px)</li>
+                <li>Open generated index.html → Test on tablet viewport (768px)</li>
+                <li>Open generated index.html → Test on desktop viewport (1024px+)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Responsive Design Testing</h2>
+        <p>Test generated websites at different viewport sizes:</p>
+        <div id="responsive-test-area"></div>
+    </div>
+
+    <script type="module">
+        import { businessPresets, getPreset, hasMenuItems } from './public/js/presets.js';
+        
+        window.businessPresets = businessPresets;
+        window.getPreset = getPreset;
+        window.hasMenuItems = hasMenuItems;
+        
+        console.log('Presets module loaded successfully');
+    </script>
+
+    <script>
+        let testResults = [];
+        
+        function clearResults() {
+            testResults = [];
+            document.getElementById('test-results').innerHTML = '';
+        }
+        
+        function addResult(testName, passed, message, details = '') {
+            testResults.push({ testName, passed, message, details });
+            displayResults();
+        }
+        
+        function displayResults() {
+            const container = document.getElementById('test-results');
+            let html = '<h3>Test Results</h3>';
+            
+            testResults.forEach((result, index) => {
+                const className = result.passed ? 'success' : 'error';
+                html += `
+                    <div class="result ${className}">
+                        <strong>Test ${index + 1}: ${result.testName}</strong><br>
+                        ${result.message}
+                        ${result.details ? `<pre>${result.details}</pre>` : ''}
+                    </div>
+                `;
+            });
+            
+            const passed = testResults.filter(r => r.passed).length;
+            const total = testResults.length;
+            const summaryClass = passed === total ? 'success' : (passed > 0 ? 'warning' : 'error');
+            
+            html += `
+                <div class="summary ${summaryClass}">
+                    Tests Passed: ${passed} / ${total}
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        async function runAllTests() {
+            clearResults();
+            
+            // Test 1: Verify presets module is loaded
+            await testPresetsModuleLoaded();
+            
+            // Test 2: Verify all 6 business types have presets
+            await testAllBusinessTypesHavePresets();
+            
+            // Test 3: Verify preset structure for coffee_shop
+            await testCoffeeShopPresetStructure();
+            
+            // Test 4: Verify preset structure for food_stall
+            await testFoodStallPresetStructure();
+            
+            // Test 5: Verify preset structure for laundry_service
+            await testLaundryServicePresetStructure();
+            
+            // Test 6: Verify preset structure for photographer_creator
+            await testPhotographerCreatorPresetStructure();
+            
+            // Test 7: Verify preset structure for bakery
+            await testBakeryPresetStructure();
+            
+            // Test 8: Verify preset structure for barber_shop
+            await testBarberShopPresetStructure();
+            
+            // Test 9: Test getPreset function
+            await testGetPresetFunction();
+            
+            // Test 10: Test hasMenuItems function
+            await testHasMenuItemsFunction();
+            
+            // Test 11: Verify deployment instructions template exists
+            await testDeploymentInstructionsExist();
+            
+            // Test 12: Verify form controller exists
+            await testFormControllerExists();
+            
+            // Test 13: Verify validation allows 0 menu items
+            await testValidationAllowsZeroMenuItems();
+            
+            // Test 14: Verify template engine handles empty menu
+            await testTemplateEngineEmptyMenu();
+            
+            // Test 15: Integration test - simulate preset application
+            await testPresetApplicationSimulation();
+        }
+        
+        async function testPresetsModuleLoaded() {
+            try {
+                if (typeof window.businessPresets !== 'undefined') {
+                    addResult(
+                        'Presets Module Loaded',
+                        true,
+                        'Presets module loaded successfully'
+                    );
+                } else {
+                    addResult(
+                        'Presets Module Loaded',
+                        false,
+                        'Presets module not loaded'
+                    );
+                }
+            } catch (error) {
+                addResult(
+                    'Presets Module Loaded',
+                    false,
+                    'Error loading presets module: ' + error.message
+                );
+            }
+        }
+        
+        async function testAllBusinessTypesHavePresets() {
+            const expectedTypes = [
+                'coffee_shop',
+                'bakery',
+                'barber_shop',
+                'food_stall',
+                'laundry_service',
+                'photographer_creator'
+            ];
+            
+            const missingTypes = [];
+            expectedTypes.forEach(type => {
+                if (!window.businessPresets[type]) {
+                    missingTypes.push(type);
+                }
+            });
+            
+            if (missingTypes.length === 0) {
+                addResult(
+                    'All Business Types Have Presets',
+                    true,
+                    'All 6 business types have preset definitions'
+                );
+            } else {
+                addResult(
+                    'All Business Types Have Presets',
+                    false,
+                    `Missing presets for: ${missingTypes.join(', ')}`
+                );
+            }
+        }
+        
+        async function testCoffeeShopPresetStructure() {
+            const preset = window.businessPresets.coffee_shop;
+            const hasRequiredFields = preset &&
+                preset.default_tagline &&
+                preset.default_short_description &&
+                Array.isArray(preset.default_menu_items) &&
+                preset.default_menu_items.length > 0;
+            
+            if (hasRequiredFields) {
+                addResult(
+                    'Coffee Shop Preset Structure',
+                    true,
+                    'Coffee shop preset has all required fields',
+                    JSON.stringify(preset, null, 2)
+                );
+            } else {
+                addResult(
+                    'Coffee Shop Preset Structure',
+                    false,
+                    'Coffee shop preset missing required fields'
+                );
+            }
+        }
+        
+        async function testFoodStallPresetStructure() {
+            const preset = window.businessPresets.food_stall;
+            const hasRequiredFields = preset &&
+                preset.default_tagline &&
+                preset.default_short_description &&
+                Array.isArray(preset.default_menu_items) &&
+                preset.default_menu_items.length > 0;
+            
+            const hasAffordableTheme = preset.default_tagline.toLowerCase().includes('affordable') ||
+                preset.default_short_description.toLowerCase().includes('affordable');
+            
+            if (hasRequiredFields && hasAffordableTheme) {
+                addResult(
+                    'Food Stall Preset Structure',
+                    true,
+                    'Food stall preset emphasizes affordability',
+                    JSON.stringify(preset, null, 2)
+                );
+            } else {
+                addResult(
+                    'Food Stall Preset Structure',
+                    false,
+                    'Food stall preset missing required fields or affordability theme'
+                );
+            }
+        }
+        
+        async function testLaundryServicePresetStructure() {
+            const preset = window.businessPresets.laundry_service;
+            const hasRequiredFields = preset &&
+                preset.default_tagline &&
+                preset.default_short_description &&
+                Array.isArray(preset.default_menu_items);
+            
+            if (hasRequiredFields) {
+                addResult(
+                    'Laundry Service Preset Structure',
+                    true,
+                    `Laundry service preset has ${preset.default_menu_items.length} service items`,
+                    JSON.stringify(preset, null, 2)
+                );
+            } else {
+                addResult(
+                    'Laundry Service Preset Structure',
+                    false,
+                    'Laundry service preset missing required fields'
+                );
+            }
+        }
+        
+        async function testPhotographerCreatorPresetStructure() {
+            const preset = window.businessPresets.photographer_creator;
+            const hasRequiredFields = preset &&
+                preset.default_tagline &&
+                preset.default_short_description &&
+                Array.isArray(preset.default_menu_items);
+            
+            if (hasRequiredFields) {
+                addResult(
+                    'Photographer Creator Preset Structure',
+                    true,
+                    `Photographer preset has ${preset.default_menu_items.length} service items`,
+                    JSON.stringify(preset, null, 2)
+                );
+            } else {
+                addResult(
+                    'Photographer Creator Preset Structure',
+                    false,
+                    'Photographer creator preset missing required fields'
+                );
+            }
+        }
+        
+        async function testBakeryPresetStructure() {
+            const preset = window.businessPresets.bakery;
+            const hasRequiredFields = preset &&
+                preset.default_tagline &&
+                preset.default_short_description &&
+                Array.isArray(preset.default_menu_items) &&
+                preset.default_menu_items.length > 0;
+            
+            if (hasRequiredFields) {
+                addResult(
+                    'Bakery Preset Structure',
+                    true,
+                    'Bakery preset has all required fields',
+                    JSON.stringify(preset, null, 2)
+                );
+            } else {
+                addResult(
+                    'Bakery Preset Structure',
+                    false,
+                    'Bakery preset missing required fields'
+                );
+            }
+        }
+        
+        async function testBarberShopPresetStructure() {
+            const preset = window.businessPresets.barber_shop;
+            const hasRequiredFields = preset &&
+                preset.default_tagline &&
+                preset.default_short_description &&
+                Array.isArray(preset.default_menu_items) &&
+                preset.default_menu_items.length > 0;
+            
+            if (hasRequiredFields) {
+                addResult(
+                    'Barber Shop Preset Structure',
+                    true,
+                    'Barber shop preset has all required fields',
+                    JSON.stringify(preset, null, 2)
+                );
+            } else {
+                addResult(
+                    'Barber Shop Preset Structure',
+                    false,
+                    'Barber shop preset missing required fields'
+                );
+            }
+        }
+        
+        async function testGetPresetFunction() {
+            try {
+                const coffeePreset = window.getPreset('coffee_shop');
+                const invalidPreset = window.getPreset('invalid_type');
+                
+                if (coffeePreset && coffeePreset.default_tagline && invalidPreset === null) {
+                    addResult(
+                        'getPreset Function',
+                        true,
+                        'getPreset function works correctly'
+                    );
+                } else {
+                    addResult(
+                        'getPreset Function',
+                        false,
+                        'getPreset function not working as expected'
+                    );
+                }
+            } catch (error) {
+                addResult(
+                    'getPreset Function',
+                    false,
+                    'Error testing getPreset: ' + error.message
+                );
+            }
+        }
+        
+        async function testHasMenuItemsFunction() {
+            try {
+                const coffeeHasMenu = window.hasMenuItems('coffee_shop');
+                const laundryHasMenu = window.hasMenuItems('laundry_service');
+                
+                if (coffeeHasMenu === true && laundryHasMenu === true) {
+                    addResult(
+                        'hasMenuItems Function',
+                        true,
+                        'hasMenuItems function works correctly'
+                    );
+                } else {
+                    addResult(
+                        'hasMenuItems Function',
+                        false,
+                        `hasMenuItems returned unexpected values: coffee=${coffeeHasMenu}, laundry=${laundryHasMenu}`
+                    );
+                }
+            } catch (error) {
+                addResult(
+                    'hasMenuItems Function',
+                    false,
+                    'Error testing hasMenuItems: ' + error.message
+                );
+            }
+        }
+        
+        async function testDeploymentInstructionsExist() {
+            try {
+                const response = await fetch('public/js/file-writer.js');
+                const content = await response.text();
+                
+                const hasDeploymentFunction = content.includes('createDeploymentInstructions') ||
+                    content.includes('deployment-instructions');
+                
+                if (hasDeploymentFunction) {
+                    addResult(
+                        'Deployment Instructions Function',
+                        true,
+                        'Deployment instructions function exists in file-writer.js'
+                    );
+                } else {
+                    addResult(
+                        'Deployment Instructions Function',
+                        false,
+                        'Deployment instructions function not found in file-writer.js'
+                    );
+                }
+            } catch (error) {
+                addResult(
+                    'Deployment Instructions Function',
+                    false,
+                    'Error checking file-writer.js: ' + error.message
+                );
+            }
+        }
+        
+        async function testFormControllerExists() {
+            try {
+                const response = await fetch('public/js/form-controller.js');
+                if (response.ok) {
+                    addResult(
+                        'Form Controller Exists',
+                        true,
+                        'form-controller.js file exists'
+                    );
+                } else {
+                    addResult(
+                        'Form Controller Exists',
+                        false,
+                        'form-controller.js file not found'
+                    );
+                }
+            } catch (error) {
+                addResult(
+                    'Form Controller Exists',
+                    false,
+                    'Error checking form-controller.js: ' + error.message
+                );
+            }
+        }
+        
+        async function testValidationAllowsZeroMenuItems() {
+            try {
+                const response = await fetch('public/js/validation.js');
+                const content = await response.text();
+                
+                // Check if validation no longer requires minimum menu items
+                const hasMinimumCheck = content.includes('at least one menu item') ||
+                    content.includes('minimum of 1');
+                
+                if (!hasMinimumCheck) {
+                    addResult(
+                        'Validation Allows Zero Menu Items',
+                        true,
+                        'Validation updated to allow 0 menu items'
+                    );
+                } else {
+                    addResult(
+                        'Validation Allows Zero Menu Items',
+                        false,
+                        'Validation still requires minimum menu items'
+                    );
+                }
+            } catch (error) {
+                addResult(
+                    'Validation Allows Zero Menu Items',
+                    false,
+                    'Error checking validation.js: ' + error.message
+                );
+            }
+        }
+        
+        async function testTemplateEngineEmptyMenu() {
+            try {
+                const response = await fetch('public/js/template-engine.js');
+                const content = await response.text();
+                
+                const handlesEmptyArray = content.includes('length === 0') ||
+                    content.includes('length == 0') ||
+                    content.includes('!menu_items.length');
+                
+                if (handlesEmptyArray) {
+                    addResult(
+                        'Template Engine Handles Empty Menu',
+                        true,
+                        'Template engine checks for empty menu arrays'
+                    );
+                } else {
+                    addResult(
+                        'Template Engine Handles Empty Menu',
+                        false,
+                        'Template engine may not handle empty menu arrays'
+                    );
+                }
+            } catch (error) {
+                addResult(
+                    'Template Engine Handles Empty Menu',
+                    false,
+                    'Error checking template-engine.js: ' + error.message
+                );
+            }
+        }
+        
+        async function testPresetApplicationSimulation() {
+            try {
+                // Simulate applying coffee_shop preset
+                const preset = window.getPreset('coffee_shop');
+                
+                if (preset) {
+                    const simulatedFormData = {
+                        business_name: 'Test Coffee Shop',
+                        business_type: 'coffee_shop',
+                        tagline: preset.default_tagline,
+                        short_description: preset.default_short_description,
+                        contact_whatsapp: '628123456789',
+                        instagram_handle: 'testcoffee',
+                        menu_items: preset.default_menu_items,
+                        theme_choice: 'classic'
+                    };
+                    
+                    addResult(
+                        'Preset Application Simulation',
+                        true,
+                        'Successfully simulated preset application',
+                        JSON.stringify(simulatedFormData, null, 2)
+                    );
+                } else {
+                    addResult(
+                        'Preset Application Simulation',
+                        false,
+                        'Could not retrieve preset for simulation'
+                    );
+                }
+            } catch (error) {
+                addResult(
+                    'Preset Application Simulation',
+                    false,
+                    'Error simulating preset application: ' + error.message
+                );
+            }
+        }
+        
+        window.runAllTests = runAllTests;
+        window.clearResults = clearResults;
+        
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            console.log('Page loaded, ready to run tests');
+        });
+    </script>
+</body>
+</html>

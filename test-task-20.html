@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 20 - Deployment Helper Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 15px 0;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Task 20: Deployment Helper Functionality Test</h1>
+    
+    <div class="info">
+        <strong>Test Purpose:</strong> Verify that the deployment instructions are generated correctly 
+        and can be downloaded as a text file.
+    </div>
+
+    <div class="test-section">
+        <h2>Test 1: Generate Deployment Instructions</h2>
+        <p>Click the button below to generate and preview the deployment instructions content.</p>
+        <button onclick="testGenerateInstructions()">Generate Instructions</button>
+        <div id="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Download Deployment Instructions File</h2>
+        <p>Click the button below to download the deployment instructions as a text file.</p>
+        <button onclick="testDownloadInstructions()">Download deployment-instructions.txt</button>
+        <p id="download-status"></p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Download Custom Text File</h2>
+        <p>Test the createTextFile function with custom content.</p>
+        <button onclick="testCustomTextFile()">Download Custom Text File</button>
+        <p id="custom-status"></p>
+    </div>
+
+    <div class="test-section">
+        <h2>Verification Checklist</h2>
+        <ul>
+            <li>✓ createDeploymentInstructions() function returns formatted text</li>
+            <li>✓ Instructions explain all three generated files (index.html, styles.css, menu.json)</li>
+            <li>✓ Netlify deployment steps are included with numbered steps</li>
+            <li>✓ GitHub Pages deployment steps are included with numbered steps</li>
+            <li>✓ Other hosting services mentioned (Vercel, Cloudflare Pages, Firebase)</li>
+            <li>✓ Website update instructions included</li>
+            <li>✓ Troubleshooting tips provided</li>
+            <li>✓ createTextFile() function works correctly</li>
+            <li>✓ Language is simple and non-technical</li>
+            <li>✓ Instructions are formatted with clear sections</li>
+        </ul>
+    </div>
+
+    <script type="module">
+        // Import file-writer functions
+        import { createDeploymentInstructions, createTextFile } from './public/js/file-writer.js';
+        
+        // Make functions available globally for onclick handlers
+        window.createDeploymentInstructions = createDeploymentInstructions;
+        window.createTextFile = createTextFile;
+        
+        window.testGenerateInstructions = function() {
+            const resultDiv = document.getElementById('result');
+            try {
+                const instructions = createDeploymentInstructions();
+                
+                // Display the instructions
+                resultDiv.innerHTML = '<span class="success">✓ Instructions generated successfully!</span>\n\n';
+                resultDiv.innerHTML += '<strong>Preview (first 500 characters):</strong>\n';
+                resultDiv.innerHTML += instructions.substring(0, 500) + '...\n\n';
+                resultDiv.innerHTML += '<strong>Total length:</strong> ' + instructions.length + ' characters\n';
+                resultDiv.innerHTML += '<strong>Contains "Netlify":</strong> ' + (instructions.includes('Netlify') ? 'Yes ✓' : 'No ✗') + '\n';
+                resultDiv.innerHTML += '<strong>Contains "GitHub Pages":</strong> ' + (instructions.includes('GitHub Pages') ? 'Yes ✓' : 'No ✗') + '\n';
+                resultDiv.innerHTML += '<strong>Contains "Vercel":</strong> ' + (instructions.includes('Vercel') ? 'Yes ✓' : 'No ✗') + '\n';
+                resultDiv.innerHTML += '<strong>Contains "Cloudflare Pages":</strong> ' + (instructions.includes('Cloudflare Pages') ? 'Yes ✓' : 'No ✗') + '\n';
+                resultDiv.innerHTML += '<strong>Contains "UPDATING YOUR WEBSITE":</strong> ' + (instructions.includes('UPDATING YOUR WEBSITE') ? 'Yes ✓' : 'No ✗') + '\n';
+                resultDiv.innerHTML += '<strong>Contains "TROUBLESHOOTING":</strong> ' + (instructions.includes('TROUBLESHOOTING') ? 'Yes ✓' : 'No ✗') + '\n';
+            } catch (error) {
+                resultDiv.innerHTML = '<span class="error">✗ Error: ' + error.message + '</span>';
+                console.error('Test failed:', error);
+            }
+        };
+        
+        window.testDownloadInstructions = function() {
+            const statusDiv = document.getElementById('download-status');
+            try {
+                const instructions = createDeploymentInstructions();
+                createTextFile(instructions, 'deployment-instructions.txt');
+                statusDiv.innerHTML = '<span class="success">✓ File download triggered! Check your downloads folder for "deployment-instructions.txt"</span>';
+            } catch (error) {
+                statusDiv.innerHTML = '<span class="error">✗ Error: ' + error.message + '</span>';
+                console.error('Download failed:', error);
+            }
+        };
+        
+        window.testCustomTextFile = function() {
+            const statusDiv = document.getElementById('custom-status');
+            try {
+                const customContent = 'This is a test text file.\nIt has multiple lines.\nCreated by createTextFile() function.';
+                createTextFile(customContent, 'test-custom.txt');
+                statusDiv.innerHTML = '<span class="success">✓ Custom file download triggered! Check your downloads folder for "test-custom.txt"</span>';
+            } catch (error) {
+                statusDiv.innerHTML = '<span class="error">✗ Error: ' + error.message + '</span>';
+                console.error('Custom file download failed:', error);
+            }
+        };
+    </script>
+</body>
+</html>

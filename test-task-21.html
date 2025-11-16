@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 21 Test - Deployment Instructions Integration</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        .test-result {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .instructions-preview {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Task 21 Test: Deployment Instructions Integration</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Verify createDeploymentInstructions Function</h2>
+        <button onclick="testDeploymentInstructionsFunction()">Run Test</button>
+        <div id="test1Result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Preview Deployment Instructions Content</h2>
+        <button onclick="previewDeploymentInstructions()">Preview Instructions</button>
+        <div id="test2Result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Test File Download (createTextFile)</h2>
+        <button onclick="testTextFileDownload()">Download Test Instructions</button>
+        <div id="test3Result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: Verify Generator Integration</h2>
+        <p>This test checks if the generator.js properly calls createDeploymentInstructions and passes it to createOutputFiles.</p>
+        <button onclick="testGeneratorIntegration()">Check Integration</button>
+        <div id="test4Result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 5: Full Generation Flow Test</h2>
+        <p>Fill out the form below and generate a website. Verify that 4 files download:</p>
+        <ul>
+            <li>index.html</li>
+            <li>styles.css</li>
+            <li>menu.json</li>
+            <li>deployment-instructions.txt</li>
+        </ul>
+        <button onclick="openMainForm()">Open Main Form</button>
+        <div id="test5Result"></div>
+    </div>
+
+    <!-- Load required scripts -->
+    <script src="public/js/file-writer.js"></script>
+    <script src="public/js/sanitization.js"></script>
+
+    <script>
+        function testDeploymentInstructionsFunction() {
+            const resultDiv = document.getElementById('test1Result');
+            resultDiv.innerHTML = '';
+
+            try {
+                // Check if function exists
+                if (typeof createDeploymentInstructions !== 'function') {
+                    resultDiv.innerHTML = '<div class="test-result fail">FAIL: createDeploymentInstructions function not found</div>';
+                    return;
+                }
+
+                // Call the function
+                const instructions = createDeploymentInstructions();
+
+                // Verify it returns a string
+                if (typeof instructions !== 'string') {
+                    resultDiv.innerHTML = '<div class="test-result fail">FAIL: Function did not return a string</div>';
+                    return;
+                }
+
+                // Verify it's not empty
+                if (instructions.length === 0) {
+                    resultDiv.innerHTML = '<div class="test-result fail">FAIL: Function returned empty string</div>';
+                    return;
+                }
+
+                // Verify it contains key sections
+                const requiredSections = [
+                    'DEPLOYMENT INSTRUCTIONS',
+                    'Netlify',
+                    'GitHub Pages',
+                    'UPDATING YOUR WEBSITE',
+                    'TROUBLESHOOTING'
+                ];
+
+                const missingSections = requiredSections.filter(section => !instructions.includes(section));
+
+                if (missingSections.length > 0) {
+                    resultDiv.innerHTML = `<div class="test-result fail">FAIL: Missing sections: ${missingSections.join(', ')}</div>`;
+                    return;
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="test-result pass">PASS: createDeploymentInstructions function works correctly</div>
+                    <div class="test-result info">Instructions length: ${instructions.length} characters</div>
+                    <div class="test-result info">Contains all required sections</div>
+                `;
+
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="test-result fail">FAIL: ${error.message}</div>`;
+            }
+        }
+
+        function previewDeploymentInstructions() {
+            const resultDiv = document.getElementById('test2Result');
+            resultDiv.innerHTML = '';
+
+            try {
+                const instructions = createDeploymentInstructions();
+                
+                resultDiv.innerHTML = `
+                    <div class="test-result pass">Instructions generated successfully</div>
+                    <div class="instructions-preview">${instructions}</div>
+                `;
+
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="test-result fail">FAIL: ${error.message}</div>`;
+            }
+        }
+
+        function testTextFileDownload() {
+            const resultDiv = document.getElementById('test3Result');
+            resultDiv.innerHTML = '';
+
+            try {
+                // Check if function exists
+                if (typeof createTextFile !== 'function') {
+                    resultDiv.innerHTML = '<div class="test-result fail">FAIL: createTextFile function not found</div>';
+                    return;
+                }
+
+                // Generate instructions
+                const instructions = createDeploymentInstructions();
+
+                // Trigger download
+                createTextFile(instructions, 'test-deployment-instructions.txt');
+
+                resultDiv.innerHTML = `
+                    <div class="test-result pass">PASS: File download triggered</div>
+                    <div class="test-result info">Check your downloads folder for: test-deployment-instructions.txt</div>
+                `;
+
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="test-result fail">FAIL: ${error.message}</div>`;
+            }
+        }
+
+        async function testGeneratorIntegration() {
+            const resultDiv = document.getElementById('test4Result');
+            resultDiv.innerHTML = '<div class="test-result info">Checking generator.js integration...</div>';
+
+            try {
+                // Fetch and check generator.js source code
+                const response = await fetch('public/js/generator.js');
+                const generatorSource = await response.text();
+
+                const checks = [];
+
+                // Check 1: createDeploymentInstructions is called
+                if (generatorSource.includes('createDeploymentInstructions()')) {
+                    checks.push('<div class="test-result pass">✓ createDeploymentInstructions() is called in generator.js</div>');
+                } else {
+                    checks.push('<div class="test-result fail">✗ createDeploymentInstructions() is NOT called in generator.js</div>');
+                }
+
+                // Check 2: createOutputFiles accepts deploymentInstructions parameter
+                if (generatorSource.includes('function createOutputFiles(html, css, menuData, deploymentInstructions)')) {
+                    checks.push('<div class="test-result pass">✓ createOutputFiles accepts deploymentInstructions parameter</div>');
+                } else {
+                    checks.push('<div class="test-result fail">✗ createOutputFiles does NOT accept deploymentInstructions parameter</div>');
+                }
+
+                // Check 3: createTextFile is called with deploymentInstructions
+                if (generatorSource.includes('createTextFile(deploymentInstructions')) {
+                    checks.push('<div class="test-result pass">✓ createTextFile is called with deploymentInstructions</div>');
+                } else {
+                    checks.push('<div class="test-result fail">✗ createTextFile is NOT called with deploymentInstructions</div>');
+                }
+
+                // Check 4: Success message mentions 4 files
+                if (generatorSource.includes('4 files')) {
+                    checks.push('<div class="test-result pass">✓ Success message mentions 4 files</div>');
+                } else {
+                    checks.push('<div class="test-result fail">✗ Success message does NOT mention 4 files</div>');
+                }
+
+                resultDiv.innerHTML = checks.join('');
+
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="test-result fail">FAIL: ${error.message}</div>`;
+            }
+        }
+
+        function openMainForm() {
+            const resultDiv = document.getElementById('test5Result');
+            resultDiv.innerHTML = `
+                <div class="test-result info">Opening main form in new window...</div>
+                <div class="test-result info">After generating, verify that 4 files download:
+                    <ul>
+                        <li>index.html</li>
+                        <li>styles.css</li>
+                        <li>menu.json</li>
+                        <li>deployment-instructions.txt</li>
+                    </ul>
+                </div>
+            `;
+            window.open('public/index.html', '_blank');
+        }
+
+        // Run initial tests on load
+        window.addEventListener('load', () => {
+            console.log('Task 21 Test Page Loaded');
+            console.log('Available functions:', {
+                createDeploymentInstructions: typeof createDeploymentInstructions,
+                createTextFile: typeof createTextFile,
+                createHTMLFile: typeof createHTMLFile,
+                createCSSFile: typeof createCSSFile,
+                createJSONFile: typeof createJSONFile
+            });
+        });
+    </script>
+</body>
+</html>

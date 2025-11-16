@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Preset Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        select, input {
+            padding: 8px;
+            margin: 10px 5px;
+            font-size: 14px;
+        }
+        #console-output {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Preset Button Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Form</h2>
+        <label for="business_type">Business Type:</label>
+        <select id="business_type">
+            <option value="">Select business type</option>
+            <option value="coffee_shop">Coffee Shop</option>
+            <option value="bakery">Bakery</option>
+            <option value="barber_shop">Barber Shop</option>
+            <option value="food_stall">Food Stall</option>
+            <option value="laundry_service">Laundry Service</option>
+            <option value="photographer_creator">Photographer/Creator</option>
+        </select>
+        <br><br>
+        
+        <button type="button" id="usePresetButton" disabled>Use Preset</button>
+        <br><br>
+        
+        <label for="tagline">Tagline:</label>
+        <input type="text" id="tagline" style="width: 400px;">
+        <br><br>
+        
+        <label for="short_description">Description:</label>
+        <input type="text" id="short_description" style="width: 400px;">
+        <br><br>
+        
+        <div id="menuItemsContainer"></div>
+        
+        <div id="presetFeedback" style="display: none; padding: 10px; margin-top: 10px; border-radius: 5px;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Console Output</h2>
+        <div id="console-output">Waiting for interactions...</div>
+    </div>
+    
+    <script type="module">
+        // Capture console.log output
+        const consoleOutput = document.getElementById('console-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            consoleOutput.textContent += args.join(' ') + '\n';
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            consoleOutput.textContent += 'ERROR: ' + args.join(' ') + '\n';
+        };
+        
+        // Import and initialize
+        import { initializeFormController } from './public/js/form-controller.js';
+        
+        console.log('Starting test...');
+        
+        // Enable/disable button based on selection
+        const businessTypeSelect = document.getElementById('business_type');
+        const usePresetButton = document.getElementById('usePresetButton');
+        
+        businessTypeSelect.addEventListener('change', function() {
+            console.log('Business type changed to:', this.value);
+            if (this.value) {
+                usePresetButton.disabled = false;
+                console.log('Preset button enabled');
+            } else {
+                usePresetButton.disabled = true;
+                console.log('Preset button disabled');
+            }
+        });
+        
+        // Initialize form controller
+        console.log('Calling initializeFormController()...');
+        initializeFormController();
+        console.log('Initialization complete');
+    </script>
+</body>
+</html>

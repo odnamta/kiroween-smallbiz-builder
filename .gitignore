@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+
+# Generated output (keep for demo purposes but can be regenerated)
+generated/*.html
+generated/*.css
+generated/*.json
+generated/*.txt
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Optional: Keep test files local (uncomment if you don't want to push tests)
+# test-*.html
+# verify-*.js
+# verify-*.html

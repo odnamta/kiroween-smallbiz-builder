@@ -1,0 +1,273 @@
+/* Classic Theme - Light, Professional Styling */
+
+/* Color Palette */
+:root {
+  --primary-blue: #2c5aa0;
+  --secondary-blue: #4a7bc8;
+  --light-gray: #f5f7fa;
+  --medium-gray: #6c757d;
+  --dark-gray: #343a40;
+  --white: #ffffff;
+  --border-color: #dee2e6;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--dark-gray);
+  background-color: var(--light-gray);
+  padding: 1rem;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--primary-blue);
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Header */
+header {
+  background-color: var(--white);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-color);
+}
+
+.tagline {
+  font-size: 1.25rem;
+  color: var(--medium-gray);
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+/* Main Content */
+main {
+  max-width: 100%;
+}
+
+section {
+  background-color: var(--white);
+  padding: 2rem 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  border: 1px solid var(--border-color);
+}
+
+/* About Section */
+.about p {
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+/* Menu Section */
+.menu-list {
+  list-style: none;
+  padding: 0;
+}
+
+.menu-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background-color: var(--light-gray);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  min-height: 44px;
+}
+
+.item-name {
+  font-weight: 600;
+  color: var(--dark-gray);
+  font-size: 1.125rem;
+}
+
+.item-price {
+  font-weight: 700;
+  color: var(--primary-blue);
+  font-size: 1.125rem;
+}
+
+/* Contact Section */
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.contact-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  min-height: 44px;
+  min-width: 44px;
+  background-color: var(--primary-blue);
+  color: var(--white);
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.contact-links a:hover,
+.contact-links a:focus {
+  background-color: var(--secondary-blue);
+  box-shadow: 0 4px 8px var(--shadow-color);
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+.whatsapp-link {
+  background-color: #25d366;
+}
+
+.whatsapp-link:hover,
+.whatsapp-link:focus {
+  background-color: #20ba5a;
+  outline-color: #25d366;
+}
+
+.instagram-link {
+  background-color: #e4405f;
+}
+
+.instagram-link:hover,
+.instagram-link:focus {
+  background-color: #d62e4f;
+  outline-color: #e4405f;
+}
+
+/* Footer */
+footer {
+  background-color: var(--white);
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  margin-top: 2rem;
+}
+
+footer p {
+  color: var(--medium-gray);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Tablet and Up (768px+) */
+@media (min-width: 768px) {
+  body {
+    padding: 2rem;
+    font-size: 18px;
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+  }
+
+  header {
+    padding: 3rem 2rem;
+  }
+
+  section {
+    padding: 2.5rem 2rem;
+  }
+
+  .menu-list {
+    columns: 2;
+    column-gap: 1.5rem;
+  }
+
+  .menu-list li {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+
+  .contact-links {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .contact-links a {
+    flex: 0 1 auto;
+  }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+  }
+
+  header {
+    padding: 4rem 3rem;
+  }
+
+  section {
+    padding: 3rem 2.5rem;
+  }
+
+  .menu-list li {
+    padding: 1.25rem;
+  }
+}
+
+/* Accessibility - Focus Indicators */
+*:focus {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+/* Ensure minimum touch target sizes */
+button,
+a,
+input,
+select,
+textarea {
+  min-height: 44px;
+  min-width: 44px;
+}

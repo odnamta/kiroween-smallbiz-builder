@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanitization Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        .test-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .test-result {
+            background: #f5f5f5;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+        }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Sanitization Module Tests</h1>
+    
+    <div id="testResults"></div>
+
+    <script src="public/js/sanitization.js"></script>
+    <script>
+        const results = [];
+
+        function test(name, fn) {
+            try {
+                const result = fn();
+                results.push({ name, passed: result.passed, message: result.message });
+            } catch (error) {
+                results.push({ name, passed: false, message: error.message });
+            }
+        }
+
+        // Test HTML sanitization
+        test('HTML Sanitization - Script tags', () => {
+            const input = '<scr' + 'ipt>alert("XSS")</scr' + 'ipt>Hello';
+            const output = Sanitization.sanitizeHTML(input);
+            const passed = !output.includes('<scr' + 'ipt>') && output.includes('Hello');
+            return { passed, message: `Input: "${input}" → Output: "${output}"` };
+        });
+
+        test('HTML Sanitization - Special characters', () => {
+            const input = '<div>Test & "quotes" \'apostrophes\'</div>';
+            const output = Sanitization.sanitizeHTML(input);
+            const passed = !output.includes('<div>') && output.includes('&amp;');
+            return { passed, message: `Input: "${input}" → Output: "${output}"` };
+        });
+
+        // Test WhatsApp URL sanitization
+        test('WhatsApp URL - Remove non-digits', () => {
+            const input = '+1 (234) 567-8900';
+            const output = Sanitization.sanitizeWhatsAppURL(input);
+            const passed = output === '12345678900';
+            return { passed, message: `Input: "${input}" → Output: "${output}"` };
+        });
+
+        test('WhatsApp URL - Keep only digits', () => {
+            const input = 'abc123def456';
+            const output = Sanitization.sanitizeWhatsAppURL(input);
+            const passed = output === '123456';
+            return { passed, message: `Input: "${input}" → Output: "${output}"` };
+        });
+
+        // Test Instagram URL sanitization
+        test('Instagram URL - Remove special chars', () => {
+            const input = '@my_business-123!';
+            const output = Sanitization.sanitizeInstagramURL(input);
+            const passed = output === 'my_business123';
+            return { passed, message: `Input: "${input}" → Output: "${output}"` };
+        });
+
+        test('Instagram URL - Keep alphanumeric and underscore', () => {
+            const input = 'test_user_123';
+            const output = Sanitization.sanitizeInstagramURL(input);
+            const passed = output === 'test_user_123';
+            return { passed, message: `Input: "${input}" → Output: "${output}"` };
+        });
+
+        // Test length enforcement
+        test('Length Enforcement - Truncate long string', () => {
+            const input = 'This is a very long string that should be truncated';
+            const output = Sanitization.enforceLength(input, 20);
+            const passed = output.length === 20 && output === 'This is a very long ';
+            return { passed, message: `Input length: ${input.length} → Output length: ${output.length}` };
+        });
+
+        test('Length Enforcement - Keep short string', () => {
+            const input = 'Short';
+            const output = Sanitization.enforceLength(input, 20);
+            const passed = output === 'Short';
+            return { passed, message: `Input: "${input}" → Output: "${output}"` };
+        });
+
+        // Test URL format validation
+        test('URL Validation - Valid WhatsApp', () => {
+            const input = '1234567890';
+            const output = Sanitization.isValidURLFormat(input, 'whatsapp');
+            const passed = output === true;
+            return { passed, message: `Input: "${input}" → Valid: ${output}` };
+        });
+
+        test('URL Validation - Invalid WhatsApp', () => {
+            const input = '123-456-7890';
+            const output = Sanitization.isValidURLFormat(input, 'whatsapp');
+            const passed = output === false;
+            return { passed, message: `Input: "${input}" → Valid: ${output}` };
+        });
+
+        test('URL Validation - Valid Instagram', () => {
+            const input = 'my_business_123';
+            const output = Sanitization.isValidURLFormat(input, 'instagram');
+            const passed = output === true;
+            return { passed, message: `Input: "${input}" → Valid: ${output}` };
+        });
+
+        test('URL Validation - Invalid Instagram', () => {
+            const input = 'my-business!';
+            const output = Sanitization.isValidURLFormat(input, 'instagram');
+            const passed = output === false;
+            return { passed, message: `Input: "${input}" → Valid: ${output}` };
+        });
+
+        // Test form data sanitization
+        test('Form Data Sanitization - Complete object', () => {
+            const input = {
+                business_name: '<scr' + 'ipt>alert("XSS")</scr' + 'ipt>My Business',
+                business_type: 'coffee shop',
+                tagline: 'Best coffee & tea',
+                short_description: 'We serve <b>great</b> coffee',
+                contact_whatsapp: '+1-234-567-8900',
+                instagram_handle: '@my_business!',
+                menu_items: [
+                    { name: '<scr' + 'ipt>Espresso</scr' + 'ipt>', price: '$3.50' },
+                    { name: 'Latte', price: '$4.50' }
+                ],
+                theme_choice: 'classic'
+            };
+            const output = Sanitization.sanitizeFormData(input);
+            const passed = 
+                !output.business_name.includes('<scr' + 'ipt>') &&
+                output.contact_whatsapp === '12345678900' &&
+                output.instagram_handle === 'my_business' &&
+                !output.menu_items[0].name.includes('<scr' + 'ipt>');
+            return { passed, message: `Sanitized ${Object.keys(output).length} fields` };
+        });
+
+        // Display results
+        const resultsDiv = document.getElementById('testResults');
+        let passCount = 0;
+        let failCount = 0;
+
+        results.forEach(result => {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            
+            const status = result.passed ? '<span class="pass">✓ PASS</span>' : '<span class="fail">✗ FAIL</span>';
+            section.innerHTML = `
+                <h3>${status} ${result.name}</h3>
+                <div class="test-result">${result.message}</div>
+            `;
+            
+            resultsDiv.appendChild(section);
+            
+            if (result.passed) passCount++;
+            else failCount++;
+        });
+
+        // Summary
+        const summary = document.createElement('div');
+        summary.className = 'test-section';
+        summary.innerHTML = `
+            <h2>Test Summary</h2>
+            <p><span class="pass">Passed: ${passCount}</span> | <span class="fail">Failed: ${failCount}</span></p>
+            <p>Total: ${results.length} tests</p>
+        `;
+        resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+    </script>
+</body>
+</html>

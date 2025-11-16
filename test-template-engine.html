@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Engine Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Template Engine Test</h1>
+    <div id="results"></div>
+
+    <script src="public/js/template-engine.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+
+        function runTest(name, testFn) {
+            try {
+                testFn();
+                resultsDiv.innerHTML += `
+                    <div class="test-section success">
+                        <h3>✓ ${name}</h3>
+                        <p>Test passed</p>
+                    </div>
+                `;
+            } catch (error) {
+                resultsDiv.innerHTML += `
+                    <div class="test-section error">
+                        <h3>✗ ${name}</h3>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Test 1: Simple placeholder replacement
+        runTest('Simple Placeholder Replacement', () => {
+            const template = '<h1>{{business_name}}</h1><p>{{tagline}}</p>';
+            const data = {
+                business_name: 'Brew Haven',
+                tagline: 'Your Daily Dose of Happiness'
+            };
+            const result = parseTemplate(template, data);
+            
+            if (!result.includes('Brew Haven') || !result.includes('Your Daily Dose of Happiness')) {
+                throw new Error('Placeholders not replaced correctly');
+            }
+        });
+
+        // Test 2: HTML sanitization
+        runTest('HTML Sanitization (XSS Prevention)', () => {
+            const template = '<h1>{{business_name}}</h1>';
+            const data = {
+                business_name: '<scr' + 'ipt>alert("xss")</scr' + 'ipt>Test'
+            };
+            const result = parseTemplate(template, data);
+            
+            if (result.includes('<scr' + 'ipt>')) {
+                throw new Error('HTML not sanitized - XSS vulnerability!');
+            }
+            if (!result.includes('&lt;script&gt;')) {
+                throw new Error('HTML entities not properly escaped');
+            }
+        });
+
+        // Test 3: Loop processing with menu items
+        runTest('Loop Processing (Menu Items)', () => {
+            const template = `
+                <ul>
+                {{#menu_items}}
+                    <li>{{name}} - {{price}}</li>
+                {{/menu_items}}
+                </ul>
+            `;
+            const data = {
+                menu_items: [
+                    { name: 'Espresso', price: '$3.50' },
+                    { name: 'Cappuccino', price: '$4.50' },
+                    { name: 'Croissant', price: '$3.00' }
+                ]
+            };
+            const result = parseTemplate(template, data);
+            
+            if (!result.includes('Espresso') || !result.includes('$3.50')) {
+                throw new Error('Menu items not rendered');
+            }
+            if (!result.includes('Cappuccino') || !result.includes('Croissant')) {
+                throw new Error('Not all menu items rendered');
+            }
+        });
+
+        // Test 4: Combined placeholders and loops
+        runTest('Combined Placeholders and Loops', () => {
+            const template = `
+                <h1>{{business_name}}</h1>
+                <p>{{tagline}}</p>
+                <ul>
+                {{#menu_items}}
+                    <li>{{name}} - {{price}}</li>
+                {{/menu_items}}
+                </ul>
+            `;
+            const data = {
+                business_name: 'Sharp Cuts',
+                tagline: 'Where Style Meets Precision',
+                menu_items: [
+                    { name: 'Classic Cut', price: '$25' },
+                    { name: 'Beard Trim', price: '$15' }
+                ]
+            };
+            const result = parseTemplate(template, data);
+            
+            if (!result.includes('Sharp Cuts') || !result.includes('Where Style Meets Precision')) {
+                throw new Error('Placeholders not replaced');
+            }
+            if (!result.includes('Classic Cut') || !result.includes('Beard Trim')) {
+                throw new Error('Menu items not rendered');
+            }
+        });
+
+        // Test 5: Empty array handling
+        runTest('Empty Array Handling', () => {
+            const template = `
+                <ul>
+                {{#menu_items}}
+                    <li>{{name}}</li>
+                {{/menu_items}}
+                </ul>
+            `;
+            const data = {
+                menu_items: []
+            };
+            const result = parseTemplate(template, data);
+            
+            // Should not contain any <li> elements
+            if (result.includes('<li>')) {
+                throw new Error('Empty array should not render list items');
+            }
+        });
+
+        // Test 6: Missing data handling
+        runTest('Missing Data Handling', () => {
+            const template = '<h1>{{business_name}}</h1><p>{{missing_field}}</p>';
+            const data = {
+                business_name: 'Test Business'
+            };
+            const result = parseTemplate(template, data);
+            
+            if (!result.includes('Test Business')) {
+                throw new Error('Existing data not rendered');
+            }
+            // Missing fields should be replaced with empty string
+            if (result.includes('{{missing_field}}')) {
+                throw new Error('Missing placeholders not removed');
+            }
+        });
+
+        console.log('All tests completed!');
+    </script>
+</body>
+</html>

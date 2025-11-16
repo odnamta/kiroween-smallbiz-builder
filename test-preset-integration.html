@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preset Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .menu-items-section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        .menu-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: flex-start;
+        }
+        .menu-item-fields {
+            flex: 1;
+            display: flex;
+            gap: 1rem;
+        }
+        .menu-item-field {
+            flex: 1;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            min-height: 44px;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem 1rem;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .menu-helper-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Preset Integration Test - Manual Testing</h1>
+    
+    <div class="test-container">
+        <!-- Left side: Form -->
+        <div class="test-section">
+            <h2>Test Form</h2>
+            <p>Select a business type and click "Use Preset" to test preset application.</p>
+            
+            <div class="form-group">
+                <label for="business_type">Business Type</label>
+                <select id="business_type">
+                    <option value="">Select your business type</option>
+                    <option value="coffee_shop">Coffee Shop</option>
+                    <option value="bakery">Bakery</option>
+                    <option value="barber_shop">Barber Shop</option>
+                    <option value="food_stall">Food Stall</option>
+                    <option value="laundry_service">Laundry Service</option>
+                    <option value="photographer_creator">Photographer/Creator</option>
+                </select>
+            </div>
+            
+            <button id="usePresetButton" class="btn btn-primary">Use Preset</button>
+            
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="tagline">Tagline</label>
+                <input type="text" id="tagline" placeholder="Will be filled by preset">
+            </div>
+            
+            <div class="form-group">
+                <label for="short_description">Short Description</label>
+                <textarea id="short_description" placeholder="Will be filled by preset"></textarea>
+            </div>
+            
+            <div class="menu-items-section">
+                <h2>Menu Items</h2>
+                <div id="menuItemsContainer"></div>
+            </div>
+        </div>
+        
+        <!-- Right side: Test Results -->
+        <div class="test-section">
+            <h2>Automated Test Results</h2>
+            <div id="testResults"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getPreset, hasMenuItems } from './public/js/presets.js';
+        import { 
+            handlePresetButtonClick,
+            populateFormWithPreset, 
+            clearMenuItems, 
+            addMenuItemsFromPreset,
+            toggleMenuSection,
+            handleBusinessTypeChange,
+            initializeFormController
+        } from './public/js/form-controller.js';
+
+        // Make functions available globally for testing
+        window.getPreset = getPreset;
+        window.populateFormWithPreset = populateFormWithPreset;
+        window.clearMenuItems = clearMenuItems;
+        window.addMenuItemsFromPreset = addMenuItemsFromPreset;
+
+        const results = [];
+
+        function runTest(name, testFn) {
+            try {
+                const result = testFn();
+                results.push({ name, passed: result, error: null });
+            } catch (error) {
+                results.push({ name, passed: false, error: error.message });
+            }
+        }
+
+        // Run automated tests
+        console.log('Running automated tests...');
+
+        // Test all 6 business types
+        const businessTypes = [
+            { key: 'coffee_shop', name: 'Coffee Shop' },
+            { key: 'bakery', name: 'Bakery' },
+            { key: 'barber_shop', name: 'Barber Shop' },
+            { key: 'food_stall', name: 'Food Stall' },
+            { key: 'laundry_service', name: 'Laundry Service' },
+            { key: 'photographer_creator', name: 'Photographer/Creator' }
+        ];
+
+        businessTypes.forEach(type => {
+            runTest(`${type.name} preset exists`, () => {
+                const preset = getPreset(type.key);
+                return preset !== null;
+            });
+
+            runTest(`${type.name} has tagline`, () => {
+                const preset = getPreset(type.key);
+                return preset && preset.default_tagline && preset.default_tagline.length > 0;
+            });
+
+            runTest(`${type.name} has description`, () => {
+                const preset = getPreset(type.key);
+                return preset && preset.default_short_description && preset.default_short_description.length > 0;
+            });
+
+            runTest(`${type.name} has menu items`, () => {
+                const preset = getPreset(type.key);
+                return preset && preset.default_menu_items && preset.default_menu_items.length > 0;
+            });
+
+            runTest(`${type.name} uses Rupiah currency`, () => {
+                const preset = getPreset(type.key);
+                return preset && preset.default_menu_items.every(item => item.price.startsWith('Rp'));
+            });
+        });
+
+        // Test preset application
+        runTest('populateFormWithPreset fills all fields', () => {
+            const preset = getPreset('coffee_shop');
+            clearMenuItems();
+            populateFormWithPreset(preset);
+            
+            const tagline = document.getElementById('tagline').value;
+            const description = document.getElementById('short_description').value;
+            const menuItems = document.querySelectorAll('.menu-item');
+            
+            return tagline.length > 0 && description.length > 0 && menuItems.length > 0;
+        });
+
+        runTest('clearMenuItems empties container', () => {
+            clearMenuItems();
+            const container = document.getElementById('menuItemsContainer');
+            return container.innerHTML === '';
+        });
+
+        runTest('addMenuItemsFromPreset creates items', () => {
+            const preset = getPreset('bakery');
+            clearMenuItems();
+            addMenuItemsFromPreset(preset.default_menu_items);
+            const menuItems = document.querySelectorAll('.menu-item');
+            return menuItems.length === preset.default_menu_items.length;
+        });
+
+        // Display results
+        const resultsDiv = document.getElementById('testResults');
+        let passCount = 0;
+        let failCount = 0;
+
+        results.forEach(result => {
+            const div = document.createElement('div');
+            div.className = `test-result ${result.passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `
+                <strong>${result.passed ? '✓' : '✗'} ${result.name}</strong>
+                ${result.error ? `<br>Error: ${result.error}` : ''}
+            `;
+            resultsDiv.appendChild(div);
+
+            if (result.passed) passCount++;
+            else failCount++;
+        });
+
+        const summary = document.createElement('div');
+        summary.style.cssText = 'padding: 1rem; background: #f0f0f0; border-radius: 4px; margin-bottom: 1rem;';
+        summary.innerHTML = `
+            <h3 style="margin-top: 0;">Test Summary</h3>
+            <p><strong>Total:</strong> ${results.length} | <strong>Passed:</strong> ${passCount} | <strong>Failed:</strong> ${failCount}</p>
+            <p><strong>Success Rate:</strong> ${((passCount / results.length) * 100).toFixed(1)}%</p>
+        `;
+        resultsDiv.insertBefore(summary, resultsDiv.firstChild);
+
+        console.log('Tests completed:', { passCount, failCount, total: results.length });
+
+        // Initialize form controller
+        initializeFormController();
+
+        // Add manual test button handler
+        document.getElementById('usePresetButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            const businessType = document.getElementById('business_type').value;
+            
+            if (!businessType) {
+                alert('Please select a business type first');
+                return;
+            }
+            
+            const preset = getPreset(businessType);
+            if (preset) {
+                clearMenuItems();
+                populateFormWithPreset(preset);
+                alert('Preset applied! Check the form fields below.');
+            } else {
+                alert('No preset found for this business type');
+            }
+        });
+
+        // Add business type change handler
+        document.getElementById('business_type').addEventListener('change', handleBusinessTypeChange);
+    </script>
+</body>
+</html>

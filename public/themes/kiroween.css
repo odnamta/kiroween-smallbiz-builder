@@ -1,0 +1,370 @@
+/* Kiroween Theme - Dark, Modern, Halloween-Inspired Styling */
+
+/* Color Palette */
+:root {
+  --primary-orange: #ff6b35;
+  --secondary-orange: #ff8c42;
+  --primary-purple: #9b59b6;
+  --secondary-purple: #8e44ad;
+  --dark-bg: #1a1a2e;
+  --darker-bg: #0f0f1e;
+  --card-bg: #16213e;
+  --text-light: #e8e8e8;
+  --text-muted: #b0b0b0;
+  --accent-green: #2ecc71;
+  --border-color: #2d3561;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --glow-orange: rgba(255, 107, 53, 0.3);
+  --glow-purple: rgba(155, 89, 182, 0.3);
+}
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-light);
+  background-color: var(--dark-bg);
+  background-image: 
+    radial-gradient(circle at 20% 50%, var(--glow-purple) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--glow-orange) 0%, transparent 50%);
+  padding: 1rem;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: var(--primary-orange);
+  margin-bottom: 1rem;
+  font-weight: 700;
+  text-shadow: 0 0 20px var(--glow-orange);
+}
+
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  font-size: 2rem;
+  color: var(--secondary-orange);
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Header */
+header {
+  background: linear-gradient(135deg, var(--card-bg) 0%, var(--darker-bg) 100%);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px var(--shadow-color), 0 0 40px var(--glow-orange);
+  margin-bottom: 2rem;
+  border: 2px solid var(--primary-orange);
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-orange), var(--primary-purple), var(--primary-orange));
+}
+
+.tagline {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  font-style: normal;
+  margin-top: 0.5rem;
+  font-weight: 300;
+}
+
+/* Main Content */
+main {
+  max-width: 100%;
+}
+
+section {
+  background: linear-gradient(135deg, var(--card-bg) 0%, var(--darker-bg) 100%);
+  padding: 2rem 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--shadow-color), 0 0 20px var(--glow-purple);
+}
+
+/* About Section */
+.about p {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--text-light);
+}
+
+/* Menu Section */
+.menu-list {
+  list-style: none;
+  padding: 0;
+}
+
+.menu-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, var(--darker-bg) 0%, var(--card-bg) 100%);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  min-height: 44px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.menu-list li::before {
+  content: '🎃';
+  position: absolute;
+  left: -30px;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.menu-list li:hover {
+  border-color: var(--primary-orange);
+  box-shadow: 0 4px 12px var(--glow-orange);
+  transform: translateX(5px);
+}
+
+.menu-list li:hover::before {
+  left: -25px;
+  opacity: 1;
+}
+
+.item-name {
+  font-weight: 600;
+  color: var(--text-light);
+  font-size: 1.125rem;
+}
+
+.item-price {
+  font-weight: 700;
+  color: var(--primary-orange);
+  font-size: 1.125rem;
+  text-shadow: 0 0 10px var(--glow-orange);
+}
+
+/* Contact Section */
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.contact-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  min-height: 44px;
+  min-width: 44px;
+  background: linear-gradient(135deg, var(--primary-orange) 0%, var(--secondary-orange) 100%);
+  color: var(--text-light);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-links a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.contact-links a:hover::before {
+  left: 100%;
+}
+
+.contact-links a:hover,
+.contact-links a:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--glow-orange);
+  border-color: var(--text-light);
+  outline: none;
+}
+
+.whatsapp-link {
+  background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
+}
+
+.whatsapp-link:hover,
+.whatsapp-link:focus {
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+}
+
+.instagram-link {
+  background: linear-gradient(135deg, #e4405f 0%, #d62e4f 100%);
+}
+
+.instagram-link:hover,
+.instagram-link:focus {
+  box-shadow: 0 8px 20px rgba(228, 64, 95, 0.4);
+}
+
+/* Footer */
+footer {
+  background: linear-gradient(135deg, var(--card-bg) 0%, var(--darker-bg) 100%);
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  margin-top: 2rem;
+  position: relative;
+}
+
+footer::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-purple), var(--primary-orange), var(--primary-purple));
+}
+
+footer p {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Tablet and Up (768px+) */
+@media (min-width: 768px) {
+  body {
+    padding: 2rem;
+    font-size: 18px;
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  h2 {
+    font-size: 2.25rem;
+  }
+
+  header {
+    padding: 3rem 2rem;
+  }
+
+  section {
+    padding: 2.5rem 2rem;
+  }
+
+  .menu-list {
+    columns: 2;
+    column-gap: 1.5rem;
+  }
+
+  .menu-list li {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+
+  .contact-links {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .contact-links a {
+    flex: 0 1 auto;
+  }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  h1 {
+    font-size: 3.5rem;
+  }
+
+  header {
+    padding: 4rem 3rem;
+  }
+
+  section {
+    padding: 3rem 2.5rem;
+  }
+
+  .menu-list li {
+    padding: 1.25rem;
+  }
+}
+
+/* Accessibility - Focus Indicators */
+*:focus {
+  outline: 2px solid var(--primary-orange);
+  outline-offset: 2px;
+}
+
+/* Ensure minimum touch target sizes */
+button,
+a,
+input,
+select,
+textarea {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Halloween-inspired decorative elements */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+section h2::after {
+  content: '✨';
+  margin-left: 0.5rem;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}

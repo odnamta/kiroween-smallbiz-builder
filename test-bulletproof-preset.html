@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bulletproof Preset Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: 0 auto; }
+        .test-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-section, .console-section { padding: 15px; border: 2px solid #ddd; border-radius: 8px; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; font-size: 14px; box-sizing: border-box; }
+        textarea { min-height: 80px; }
+        button { padding: 12px 24px; font-size: 16px; cursor: pointer; margin: 10px 0; 
+                 background: #27ae60; color: white; border: none; border-radius: 5px; width: 100%; }
+        button:hover { background: #229954; }
+        #console { background: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 5px; 
+                   font-family: 'Courier New', monospace; font-size: 12px;
+                   white-space: pre-wrap; max-height: 600px; overflow-y: auto; }
+        .menu-item { border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px; background: #f9f9f9; }
+        #presetFeedback { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        h1 { text-align: center; grid-column: 1 / -1; }
+        h2 { margin-top: 0; color: #333; }
+        .success { color: #27ae60; }
+        .error { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Bulletproof Preset Test</h1>
+    
+    <div class="test-container">
+        <div class="form-section">
+            <h2>Form</h2>
+            
+            <div class="form-group">
+                <label for="business_type">Business Type:</label>
+                <select id="business_type">
+                    <option value="">Select business type</option>
+                    <option value="coffee_shop">Coffee Shop</option>
+                    <option value="bakery">Bakery</option>
+                    <option value="barber_shop">Barber Shop</option>
+                    <option value="food_stall">Food Stall</option>
+                    <option value="laundry_service">Laundry Service</option>
+                    <option value="photographer_creator">Photographer/Creator</option>
+                </select>
+            </div>
+            
+            <button type="button" id="usePresetButton" onclick="applyPresetToForm()">
+                🎯 Use Preset
+            </button>
+            
+            <div id="presetFeedback" style="display: none;"></div>
+            
+            <div class="form-group">
+                <label for="tagline">Tagline:</label>
+                <input type="text" id="tagline" placeholder="Will be filled by preset...">
+            </div>
+            
+            <div class="form-group">
+                <label for="short_description">Description:</label>
+                <textarea id="short_description" placeholder="Will be filled by preset..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Menu Items:</label>
+                <div id="menuItemsContainer">
+                    <em style="color: #999;">No items yet - click "Use Preset" to populate</em>
+                </div>
+            </div>
+        </div>
+        
+        <div class="console-section">
+            <h2>Console Output</h2>
+            <div id="console">🟢 System Ready
+Waiting for button click...
+
+Instructions:
+1. Select a business type
+2. Click "Use Preset" button
+3. Watch the magic happen!
+</div>
+        </div>
+    </div>
+    
+    <script type="module">
+        // Capture console output with styling
+        const consoleDiv = document.getElementById('console');
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        function addToConsole(text, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌ ERROR' : '✓';
+            consoleDiv.textContent += `\n[${timestamp}] ${prefix} ${text}`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const text = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            addToConsole(text, 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+        
+        // Import form controller (this will set up window.applyPresetToForm)
+        import { initializeFormController } from './public/js/form-controller.js';
+        
+        console.log('=== INITIALIZING ===');
+        initializeFormController();
+        console.log('=== READY ===');
+        console.log('');
+        
+        // Add visual feedback when fields change
+        const tagline = document.getElementById('tagline');
+        const description = document.getElementById('short_description');
+        
+        tagline.addEventListener('input', () => {
+            console.log('Tagline changed to: ' + tagline.value.substring(0, 50) + '...');
+        });
+        
+        description.addEventListener('input', () => {
+            console.log('Description changed to: ' + description.value.substring(0, 50) + '...');
+        });
+    </script>
+</body>
+</html>

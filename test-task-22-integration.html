@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 22 Integration Test - Complete Flow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .preview {
+            background: #fff;
+            border: 2px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .preview h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .preview iframe {
+            width: 100%;
+            min-height: 400px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .summary {
+            background: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Task 22 Integration Test - Complete Generation Flow</h1>
+    <p>Testing the complete website generation flow with empty and populated menu arrays.</p>
+
+    <div id="results"></div>
+
+    <script src="public/js/sanitization.js"></script>
+    <script src="public/js/template-engine.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        let passCount = 0;
+        let failCount = 0;
+
+        function addResult(title, passed, message) {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            
+            const heading = document.createElement('h2');
+            heading.textContent = title;
+            section.appendChild(heading);
+            
+            const result = document.createElement('div');
+            result.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            result.textContent = `${passed ? '✓ PASS' : '✗ FAIL'}: ${message}`;
+            section.appendChild(result);
+            
+            results.appendChild(section);
+            
+            if (passed) passCount++;
+            else failCount++;
+            
+            return section;
+        }
+
+        function addPreview(section, html, title) {
+            const preview = document.createElement('div');
+            preview.className = 'preview';
+            
+            const previewTitle = document.createElement('h3');
+            previewTitle.textContent = title;
+            preview.appendChild(previewTitle);
+            
+            const iframe = document.createElement('iframe');
+            iframe.srcdoc = html;
+            preview.appendChild(iframe);
+            
+            section.appendChild(preview);
+        }
+
+        // Load base template and run tests
+        fetch('public/templates/base-template.html')
+            .then(response => response.text())
+            .then(baseTemplate => {
+                
+                // Test 1: Generate website with empty menu (laundry service)
+                const section1 = addResult(
+                    'Test 1: Generate website with empty menu (Laundry Service)',
+                    true,
+                    'Testing generation flow for business without menu items'
+                );
+                
+                const dataEmpty = {
+                    business_name: "Fresh Laundry Service",
+                    tagline: "Clean Clothes, Fast Service",
+                    short_description: "Professional laundry service with same-day turnaround. We handle your clothes with care.",
+                    contact_whatsapp: "628123456789",
+                    instagram_handle: "fresh_laundry",
+                    menu_items: []
+                };
+                
+                try {
+                    const sanitizedEmpty = Sanitization.sanitizeFormData(dataEmpty);
+                    const htmlEmpty = parseTemplate(baseTemplate, sanitizedEmpty);
+                    
+                    const hasEmptyMessage = htmlEmpty.includes('Contact us for custom pricing');
+                    const hasMenuList = htmlEmpty.includes('class="menu-list"');
+                    const hasOurServices = htmlEmpty.includes('Our Services');
+                    
+                    if (hasEmptyMessage && !hasMenuList && hasOurServices) {
+                        addPreview(section1, htmlEmpty, 'Generated Website Preview (Empty Menu)');
+                    } else {
+                        section1.querySelector('.test-result').className = 'test-result fail';
+                        section1.querySelector('.test-result').textContent = '✗ FAIL: Empty menu not handled correctly';
+                        passCount--;
+                        failCount++;
+                    }
+                } catch (error) {
+                    section1.querySelector('.test-result').className = 'test-result fail';
+                    section1.querySelector('.test-result').textContent = `✗ FAIL: ${error.message}`;
+                    passCount--;
+                    failCount++;
+                }
+                
+                // Test 2: Generate website with populated menu (coffee shop)
+                const section2 = addResult(
+                    'Test 2: Generate website with populated menu (Coffee Shop)',
+                    true,
+                    'Testing generation flow for business with menu items'
+                );
+                
+                const dataPopulated = {
+                    business_name: "Brew Haven Cafe",
+                    tagline: "Your Daily Dose of Happiness",
+                    short_description: "Artisan coffee and fresh pastries in a cozy atmosphere. We serve premium coffee beans sourced from local farms.",
+                    contact_whatsapp: "628987654321",
+                    instagram_handle: "brewhaven_cafe",
+                    menu_items: [
+                        { name: "Espresso", price: "Rp 15,000" },
+                        { name: "Cappuccino", price: "Rp 25,000" },
+                        { name: "Latte", price: "Rp 28,000" },
+                        { name: "Croissant", price: "Rp 18,000" }
+                    ]
+                };
+                
+                try {
+                    const sanitizedPopulated = Sanitization.sanitizeFormData(dataPopulated);
+                    const htmlPopulated = parseTemplate(baseTemplate, sanitizedPopulated);
+                    
+                    const hasMenuList = htmlPopulated.includes('class="menu-list"');
+                    const hasEspresso = htmlPopulated.includes('Espresso');
+                    const hasCappuccino = htmlPopulated.includes('Cappuccino');
+                    const hasEmptyMessage = htmlPopulated.includes('Contact us for custom pricing');
+                    const hasOurMenu = htmlPopulated.includes('Our Menu');
+                    
+                    if (hasMenuList && hasEspresso && hasCappuccino && !hasEmptyMessage && hasOurMenu) {
+                        addPreview(section2, htmlPopulated, 'Generated Website Preview (With Menu)');
+                    } else {
+                        section2.querySelector('.test-result').className = 'test-result fail';
+                        section2.querySelector('.test-result').textContent = '✗ FAIL: Menu items not displayed correctly';
+                        passCount--;
+                        failCount++;
+                    }
+                } catch (error) {
+                    section2.querySelector('.test-result').className = 'test-result fail';
+                    section2.querySelector('.test-result').textContent = `✗ FAIL: ${error.message}`;
+                    passCount--;
+                    failCount++;
+                }
+                
+                // Test 3: Side-by-side comparison
+                const section3 = document.createElement('div');
+                section3.className = 'test-section';
+                section3.innerHTML = '<h2>Test 3: Side-by-Side Comparison</h2>';
+                
+                const grid = document.createElement('div');
+                grid.className = 'grid';
+                
+                // Empty menu preview
+                const emptyPreview = document.createElement('div');
+                emptyPreview.className = 'preview';
+                emptyPreview.innerHTML = '<h3>Empty Menu (Laundry Service)</h3>';
+                const emptyIframe = document.createElement('iframe');
+                const sanitizedEmpty = Sanitization.sanitizeFormData(dataEmpty);
+                const htmlEmpty = parseTemplate(baseTemplate, sanitizedEmpty);
+                emptyIframe.srcdoc = htmlEmpty;
+                emptyPreview.appendChild(emptyIframe);
+                grid.appendChild(emptyPreview);
+                
+                // Populated menu preview
+                const populatedPreview = document.createElement('div');
+                populatedPreview.className = 'preview';
+                populatedPreview.innerHTML = '<h3>Populated Menu (Coffee Shop)</h3>';
+                const populatedIframe = document.createElement('iframe');
+                const sanitizedPopulated = Sanitization.sanitizeFormData(dataPopulated);
+                const htmlPopulated = parseTemplate(baseTemplate, sanitizedPopulated);
+                populatedIframe.srcdoc = htmlPopulated;
+                populatedPreview.appendChild(populatedIframe);
+                grid.appendChild(populatedPreview);
+                
+                section3.appendChild(grid);
+                results.appendChild(section3);
+                
+                // Add summary
+                const summary = document.createElement('div');
+                summary.className = 'summary';
+                summary.innerHTML = `
+                    <h2>Test Summary</h2>
+                    <p><strong>Total Tests:</strong> ${passCount + failCount}</p>
+                    <p><strong>Passed:</strong> ${passCount}</p>
+                    <p><strong>Failed:</strong> ${failCount}</p>
+                    <p><strong>Success Rate:</strong> ${((passCount / (passCount + failCount)) * 100).toFixed(1)}%</p>
+                    <p><strong>Status:</strong> ${failCount === 0 ? '✓ All tests passed! Empty menu handling works correctly.' : '✗ Some tests failed. Review the results above.'}</p>
+                `;
+                results.appendChild(summary);
+            })
+            .catch(error => {
+                addResult('Template Loading', false, `Error loading template: ${error.message}`);
+            });
+    </script>
+</body>
+</html>

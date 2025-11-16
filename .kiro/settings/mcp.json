@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "website-generator": {
+      "command": "node",
+      "args": [
+        "mcp-server/website-generator-server.js"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "generate_website"
+      ]
+    }
+  }
+}
