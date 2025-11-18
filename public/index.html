@@ -13,30 +13,82 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #050816;
             min-height: 100vh;
-            padding: 1rem;
             line-height: 1.6;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
+        .app-shell {
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #050816;
+            color: #f9fafb;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+        }
+
+        .app-header {
+            text-align: center;
+            padding: 16px 0;
+        }
+
+        .app-main {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.1fr);
+            gap: 16px;
+        }
+
+        .form-column,
+        .preview-column {
+            background: rgba(15, 23, 42, 0.96);
+            border-radius: 16px;
+            padding: 16px 18px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .preview-header h2 {
+            font-size: 1.25rem;
+            color: #f9fafb;
+            margin: 0;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 480px;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            padding: 2rem;
+            border: none;
+            background: #ffffff;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 0;
         }
 
         h1 {
-            color: #333;
+            color: #f9fafb;
             margin-bottom: 0.5rem;
             font-size: 2rem;
         }
 
         .subtitle {
-            color: #666;
-            margin-bottom: 2rem;
+            color: #cbd5e1;
+            margin-bottom: 0;
             font-size: 1rem;
         }
 
@@ -47,7 +99,7 @@
         label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #333;
+            color: #f9fafb;
             font-weight: 600;
             font-size: 0.95rem;
         }
@@ -61,11 +113,13 @@
         textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid #e0e0e0;
+            border: 2px solid rgba(255, 255, 255, 0.15);
             border-radius: 6px;
             font-size: 1rem;
             font-family: inherit;
             transition: border-color 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+            color: #f9fafb;
         }
 
         input[type="text"]:focus,
@@ -73,6 +127,12 @@
         textarea:focus {
             outline: none;
             border-color: #667eea;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        select option {
+            background: #1e293b;
+            color: #f9fafb;
         }
 
         textarea {
@@ -98,35 +158,39 @@
         .theme-option label {
             display: block;
             padding: 1rem;
-            border: 2px solid #e0e0e0;
+            border: 2px solid rgba(255, 255, 255, 0.15);
             border-radius: 6px;
             cursor: pointer;
             text-align: center;
             transition: all 0.3s;
             font-weight: 500;
+            background: rgba(255, 255, 255, 0.05);
+            color: #f9fafb;
         }
 
         .theme-option input[type="radio"]:checked + label {
             border-color: #667eea;
-            background: #f0f4ff;
-            color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+            color: #a5b4fc;
         }
 
         .theme-option label:hover {
             border-color: #667eea;
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .menu-items-section {
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.03);
             padding: 1.5rem;
             border-radius: 8px;
             margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .menu-items-section h2 {
             font-size: 1.25rem;
             margin-bottom: 1rem;
-            color: #333;
+            color: #f9fafb;
         }
 
         .menu-item {
@@ -229,13 +293,23 @@
         }
 
         /* Mobile responsive */
-        @media (max-width: 768px) {
-            body {
-                padding: 0.5rem;
+        @media (max-width: 900px) {
+            .app-shell {
+                padding: 16px;
             }
 
-            .container {
-                padding: 1.5rem;
+            .app-main {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-frame {
+                height: 380px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-shell {
+                padding: 12px;
             }
 
             h1 {
@@ -278,15 +352,15 @@
         }
 
         .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: rgba(34, 197, 94, 0.15);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
 
         .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .btn-preset {
@@ -309,25 +383,30 @@
         }
 
         .helper-text {
-            color: #666;
+            color: #94a3b8;
             font-size: 0.85rem;
             margin-top: 0.5rem;
             font-style: italic;
         }
 
         .menu-helper-text {
-            color: #666;
+            color: #94a3b8;
             font-size: 0.9rem;
             margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Code-Free Website Builder</h1>
-        <p class="subtitle">Create a professional landing page for your business in minutes</p>
-
-        <form id="websiteForm">
+    <div class="app-shell">
+        <header class="app-header">
+            <h1>Code-Free Website Builder</h1>
+            <p class="subtitle">Create a professional landing page for your business in minutes</p>
+        </header>
+        
+        <main class="app-main">
+            <section class="form-column">
+                <div class="container">
+                    <form id="websiteForm">
             <!-- Business Name -->
             <div class="form-group">
                 <label for="business_name">Business Name <span class="required">*</span></label>
@@ -443,9 +522,20 @@
             <!-- Generation Message -->
             <div id="generationMessage" class="message" style="display: none; margin-top: 1rem; padding: 1rem; border-radius: 6px;"></div>
         </form>
+                </div>
+            </section>
+            
+            <section class="preview-column">
+                <div class="preview-header">
+                    <h2>Live Preview</h2>
+                    <button id="updatePreviewBtn" type="button" class="btn btn-secondary">Update Preview</button>
+                </div>
+                <iframe id="previewFrame" title="Website Preview" class="preview-frame"></iframe>
+            </section>
+        </main>
     </div>
 
-    <!-- Load modules in order: sanitization, validation, template-engine, file-writer, presets, form-controller, generator -->
+    <!-- Load modules in order: sanitization, validation, template-engine, file-writer, presets, form-controller, generator, preview -->
     <script src="js/sanitization.js"></script>
     <script src="js/validation.js"></script>
     <script src="js/template-engine.js"></script>
@@ -453,6 +543,7 @@
     <script type="module" src="js/presets.js"></script>
     <script type="module" src="js/form-controller.js"></script>
     <script src="js/generator.js"></script>
+    <script src="js/preview.js" defer></script>
     
     <!-- Initialize form controller -->
     <script type="module">

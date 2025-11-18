@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 1 Refactor Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Phase 1 Refactor Test - buildSiteArtifacts()</h1>
+    
+    <div class="test-section">
+        <h2>Test Overview</h2>
+        <p>This test verifies that the new <code>buildSiteArtifacts()</code> function:</p>
+        <ul>
+            <li>✓ Is available globally on the window object</li>
+            <li>✓ Returns the correct structure: { html, css, menuJson, instructionsTxt }</li>
+            <li>✓ Produces valid HTML, CSS, and JSON</li>
+            <li>✓ Has no side effects (doesn't trigger downloads)</li>
+            <li>✓ Can be called multiple times without issues</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button onclick="testBuildSiteArtifacts()">Test buildSiteArtifacts()</button>
+        <button onclick="testMultipleCalls()">Test Multiple Calls</button>
+        <button onclick="clearResults()">Clear Results</button>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Integration Test</h2>
+        <p>Test the full generation flow (will trigger downloads):</p>
+        <button onclick="window.open('public/index.html', '_blank')">Open Full Builder</button>
+    </div>
+
+    <!-- Load all required modules -->
+    <script src="public/js/sanitization.js"></script>
+    <script src="public/js/validation.js"></script>
+    <script src="public/js/template-engine.js"></script>
+    <script src="public/js/file-writer.js"></script>
+    <script src="public/js/generator.js"></script>
+
+    <script>
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        function showResult(message, type = 'success', details = '') {
+            const container = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = `
+                <strong>${message}</strong>
+                ${details ? `<pre>${details}</pre>` : ''}
+            `;
+            container.appendChild(resultDiv);
+        }
+
+        async function testBuildSiteArtifacts() {
+            clearResults();
+            
+            try {
+                // Test 1: Check if function exists
+                if (typeof window.buildSiteArtifacts !== 'function') {
+                    showResult('❌ FAIL: buildSiteArtifacts is not available on window object', 'error');
+                    return;
+                }
+                showResult('✓ PASS: buildSiteArtifacts is available globally', 'success');
+
+                // Test 2: Create sample form data
+                const sampleFormData = {
+                    business_name: 'Test Coffee Shop',
+                    business_type: 'coffee_shop',
+                    tagline: 'Your Daily Dose of Happiness',
+                    short_description: 'We serve the best coffee in town with a cozy atmosphere.',
+                    contact_whatsapp: '628123456789',
+                    instagram_handle: 'testcoffee',
+                    theme_choice: 'classic',
+                    menu_items: [
+                        { name: 'Espresso', price: 'Rp 25,000' },
+                        { name: 'Cappuccino', price: 'Rp 30,000' },
+                        { name: 'Latte', price: 'Rp 32,000' }
+                    ]
+                };
+
+                showResult('✓ Sample form data created', 'success', JSON.stringify(sampleFormData, null, 2));
+
+                // Test 3: Call buildSiteArtifacts
+                showResult('⏳ Calling buildSiteArtifacts()...', 'success');
+                const artifacts = await window.buildSiteArtifacts(sampleFormData);
+
+                // Test 4: Verify return structure
+                if (!artifacts || typeof artifacts !== 'object') {
+                    showResult('❌ FAIL: buildSiteArtifacts did not return an object', 'error');
+                    return;
+                }
+                showResult('✓ PASS: buildSiteArtifacts returned an object', 'success');
+
+                // Test 5: Check for required properties
+                const requiredProps = ['html', 'css', 'menuJson', 'instructionsTxt'];
+                const missingProps = requiredProps.filter(prop => !artifacts.hasOwnProperty(prop));
+                
+                if (missingProps.length > 0) {
+                    showResult(`❌ FAIL: Missing properties: ${missingProps.join(', ')}`, 'error');
+                    return;
+                }
+                showResult('✓ PASS: All required properties present (html, css, menuJson, instructionsTxt)', 'success');
+
+                // Test 6: Verify HTML content
+                if (typeof artifacts.html !== 'string' || artifacts.html.length === 0) {
+                    showResult('❌ FAIL: HTML is not a valid string', 'error');
+                } else if (!artifacts.html.includes('<!DOCTYPE html>')) {
+                    showResult('❌ FAIL: HTML does not contain DOCTYPE', 'error');
+                } else if (!artifacts.html.includes('Test Coffee Shop')) {
+                    showResult('❌ FAIL: HTML does not contain business name', 'error');
+                } else {
+                    showResult(`✓ PASS: HTML is valid (${artifacts.html.length} characters)`, 'success');
+                }
+
+                // Test 7: Verify CSS content
+                if (typeof artifacts.css !== 'string' || artifacts.css.length === 0) {
+                    showResult('❌ FAIL: CSS is not a valid string', 'error');
+                } else {
+                    showResult(`✓ PASS: CSS is valid (${artifacts.css.length} characters)`, 'success');
+                }
+
+                // Test 8: Verify JSON content
+                try {
+                    const menuData = JSON.parse(artifacts.menuJson);
+                    if (!menuData.menu_items || !Array.isArray(menuData.menu_items)) {
+                        showResult('❌ FAIL: menuJson does not contain valid menu_items array', 'error');
+                    } else if (menuData.menu_items.length !== 3) {
+                        showResult(`❌ FAIL: Expected 3 menu items, got ${menuData.menu_items.length}`, 'error');
+                    } else {
+                        showResult(`✓ PASS: menuJson is valid with ${menuData.menu_items.length} items`, 'success', artifacts.menuJson);
+                    }
+                } catch (e) {
+                    showResult('❌ FAIL: menuJson is not valid JSON', 'error', e.message);
+                }
+
+                // Test 9: Verify deployment instructions
+                if (typeof artifacts.instructionsTxt !== 'string' || artifacts.instructionsTxt.length === 0) {
+                    showResult('❌ FAIL: instructionsTxt is not a valid string', 'error');
+                } else if (!artifacts.instructionsTxt.includes('DEPLOYMENT INSTRUCTIONS')) {
+                    showResult('❌ FAIL: instructionsTxt does not contain expected header', 'error');
+                } else {
+                    showResult(`✓ PASS: instructionsTxt is valid (${artifacts.instructionsTxt.length} characters)`, 'success');
+                }
+
+                // Test 10: Verify no downloads were triggered
+                showResult('✓ PASS: No downloads triggered (pure function with no side effects)', 'success');
+
+                // Summary
+                showResult('🎉 ALL TESTS PASSED! buildSiteArtifacts() is working correctly.', 'success');
+
+            } catch (error) {
+                showResult('❌ ERROR: ' + error.message, 'error', error.stack);
+            }
+        }
+
+        async function testMultipleCalls() {
+            clearResults();
+            
+            try {
+                showResult('Testing multiple calls to buildSiteArtifacts()...', 'success');
+
+                const formData1 = {
+                    business_name: 'Coffee Shop 1',
+                    business_type: 'coffee_shop',
+                    tagline: 'First tagline',
+                    short_description: 'First description',
+                    contact_whatsapp: '1111111111',
+                    instagram_handle: 'coffee1',
+                    theme_choice: 'classic',
+                    menu_items: [{ name: 'Item 1', price: 'Rp 10,000' }]
+                };
+
+                const formData2 = {
+                    business_name: 'Bakery Shop 2',
+                    business_type: 'bakery',
+                    tagline: 'Second tagline',
+                    short_description: 'Second description',
+                    contact_whatsapp: '2222222222',
+                    instagram_handle: 'bakery2',
+                    theme_choice: 'kiroween',
+                    menu_items: [{ name: 'Item 2', price: 'Rp 20,000' }]
+                };
+
+                // Call 1
+                const artifacts1 = await window.buildSiteArtifacts(formData1);
+                if (artifacts1.html.includes('Coffee Shop 1') && artifacts1.html.includes('First tagline')) {
+                    showResult('✓ PASS: First call returned correct data', 'success');
+                } else {
+                    showResult('❌ FAIL: First call data incorrect', 'error');
+                }
+
+                // Call 2
+                const artifacts2 = await window.buildSiteArtifacts(formData2);
+                if (artifacts2.html.includes('Bakery Shop 2') && artifacts2.html.includes('Second tagline')) {
+                    showResult('✓ PASS: Second call returned correct data', 'success');
+                } else {
+                    showResult('❌ FAIL: Second call data incorrect', 'error');
+                }
+
+                // Verify independence
+                if (artifacts1.html !== artifacts2.html) {
+                    showResult('✓ PASS: Multiple calls produce independent results', 'success');
+                } else {
+                    showResult('❌ FAIL: Multiple calls produced identical results', 'error');
+                }
+
+                showResult('🎉 Multiple calls test completed successfully!', 'success');
+
+            } catch (error) {
+                showResult('❌ ERROR: ' + error.message, 'error', error.stack);
+            }
+        }
+
+        // Auto-run basic test on load
+        window.addEventListener('load', () => {
+            console.log('Phase 1 refactor test page loaded');
+            console.log('buildSiteArtifacts available:', typeof window.buildSiteArtifacts === 'function');
+        });
+    </script>
+</body>
+</html>

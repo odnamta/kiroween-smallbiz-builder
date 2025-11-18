@@ -54,7 +54,7 @@
      */
     async function loadTemplate() {
         try {
-            const response = await fetch('templates/base-template.html');
+            const response = await fetch('/public/templates/base-template.html');
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -76,7 +76,7 @@
     async function generateCSS(themeChoice) {
         try {
             const themeFile = themeChoice === 'kiroween' ? 'kiroween.css' : 'classic.css';
-            const response = await fetch(`themes/${themeFile}`);
+            const response = await fetch(`/public/themes/${themeFile}`);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -154,14 +154,12 @@
     }
 
     /**
-     * Main website generation function
-     * Coordinates all generation steps
-     * @param {Object} formData - The collected and validated form data
+     * Pure function that builds all website artifacts without side effects
+     * @param {Object} formData - Raw form data from collectFormData()
+     * @returns {Promise<Object>} - Object containing { html, css, menuJson, instructionsTxt }
      */
-    async function generateWebsite(formData) {
+    async function buildSiteArtifacts(formData) {
         try {
-            showMessage('Generating your website...', 'success');
-            
             // Sanitize form data
             const sanitizedData = Sanitization.sanitizeFormData(formData);
             
@@ -172,13 +170,46 @@
             ]);
             
             // Inject data into template
-            const generatedHTML = injectData(template, sanitizedData);
+            const html = injectData(template, sanitizedData);
             
             // Generate deployment instructions
-            const deploymentInstructions = createDeploymentInstructions();
+            const instructionsTxt = createDeploymentInstructions();
+            
+            // Create menu JSON string
+            const menuJson = JSON.stringify({ menu_items: sanitizedData.menu_items }, null, 2);
+            
+            // Return all artifacts as plain object
+            return {
+                html,
+                css,
+                menuJson,
+                instructionsTxt
+            };
+        } catch (error) {
+            console.error('Error building site artifacts:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Main website generation function
+     * Coordinates all generation steps and triggers downloads
+     * @param {Object} formData - The collected and validated form data
+     */
+    async function generateWebsite(formData) {
+        try {
+            showMessage('Generating your website...', 'success');
+            
+            // Build all artifacts using pure function
+            const artifacts = await buildSiteArtifacts(formData);
             
             // Create and download files
-            createOutputFiles(generatedHTML, css, sanitizedData.menu_items, deploymentInstructions);
+            createOutputFiles(
+                artifacts.html,
+                artifacts.css,
+                JSON.parse(artifacts.menuJson).menu_items,
+                artifacts.instructionsTxt
+            );
             
             // Show success message
             showMessage('✓ Website generated successfully! Your files are downloading now (4 files total).', 'success');
@@ -229,6 +260,11 @@
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
+    }
+
+    // Make buildSiteArtifacts available globally for preview functionality
+    if (typeof window !== 'undefined') {
+        window.buildSiteArtifacts = buildSiteArtifacts;
     }
 
 })();
