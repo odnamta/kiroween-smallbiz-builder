@@ -104,6 +104,66 @@
             font-size: 0.95rem;
         }
 
+        .field-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .field-label-row label {
+            margin-bottom: 0;
+        }
+
+        .ai-helper-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: #4b5563;
+            color: #f9fafb;
+            transition: opacity 0.15s ease, transform 0.08s ease;
+            white-space: nowrap;
+        }
+
+        .ai-helper-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .ai-helper-btn:active {
+            transform: translateY(0);
+        }
+
+        .tone-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .tone-toggle-label {
+            color: #94a3b8;
+        }
+
+        .tone-select {
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.65);
+            padding: 2px 8px;
+            background: rgba(15, 23, 42, 0.9);
+            color: #e5e7eb;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .tone-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
         label .required {
             color: #e74c3c;
         }
@@ -442,14 +502,29 @@
 
             <!-- Tagline -->
             <div class="form-group">
-                <label for="tagline">Tagline <span class="required">*</span></label>
+                <div class="field-label-row">
+                    <label for="tagline">Tagline <span class="required">*</span></label>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <div class="tone-toggle">
+                            <span class="tone-toggle-label">Tone:</span>
+                            <select id="toneMode" name="toneMode" class="tone-select">
+                                <option value="normal" selected>Normal</option>
+                                <option value="haunted">Haunted</option>
+                            </select>
+                        </div>
+                        <button type="button" id="autoTaglineBtn" class="ai-helper-btn">✨ Auto Tagline</button>
+                    </div>
+                </div>
                 <input type="text" id="tagline" name="tagline" required maxlength="150" placeholder="e.g., Your Daily Dose of Happiness">
                 <div class="error-message">Please enter a tagline</div>
             </div>
 
             <!-- Short Description -->
             <div class="form-group">
-                <label for="short_description">Short Description <span class="required">*</span></label>
+                <div class="field-label-row">
+                    <label for="short_description">Short Description <span class="required">*</span></label>
+                    <button type="button" id="autoDescriptionBtn" class="ai-helper-btn">✨ Auto Description</button>
+                </div>
                 <textarea id="short_description" name="short_description" required maxlength="500" placeholder="Tell customers about your business..."></textarea>
                 <div class="error-message">Please enter a description</div>
             </div>
@@ -492,7 +567,10 @@
 
             <!-- Menu Items Section -->
             <div class="menu-items-section">
-                <h2>Menu Items <span class="required">*</span></h2>
+                <div class="field-label-row">
+                    <h2 style="margin: 0;">Menu Items <span class="required">*</span></h2>
+                    <button type="button" id="autoMenuBtn" class="ai-helper-btn">✨ Auto Menu Items</button>
+                </div>
                 <p class="menu-helper-text" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; display: none;">Optional: Add service items if desired</p>
                 <div id="menuItemsContainer">
                     <!-- Initial menu item -->
@@ -544,6 +622,7 @@
     <script type="module" src="js/form-controller.js"></script>
     <script src="js/generator.js"></script>
     <script src="js/preview.js" defer></script>
+    <script src="js/ai-helpers.js" defer></script>
     
     <!-- Initialize form controller -->
     <script type="module">

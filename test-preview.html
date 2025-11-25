@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview & buildSiteArtifacts Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            margin-bottom: 1rem;
+        }
+        .test-section {
+            background: #ffffff;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .test-result {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .summary {
+            font-weight: bold;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 0.5rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+        }
+        form {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+        .form-row {
+            margin-bottom: 0.5rem;
+        }
+        label {
+            display: inline-block;
+            width: 180px;
+        }
+        input[type="text"], textarea {
+            width: 250px;
+        }
+        .menu-row {
+            margin-left: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Preview & buildSiteArtifacts Unit Tests</h1>
+    <p>Open this file in a browser (via a local web server) to run unit-style tests for <code>buildSiteArtifacts</code> and <code>preview.js</code>.</p>
+
+    <div id="testResults"></div>
+
+    <!-- Minimal form + preview DOM for preview.js tests -->
+    <form id="websiteForm">
+        <div class="form-row">
+            <label for="business_name">Business Name</label>
+            <input type="text" id="business_name" name="business_name">
+        </div>
+        <div class="form-row">
+            <label for="business_type">Business Type</label>
+            <input type="text" id="business_type" name="business_type">
+        </div>
+        <div class="form-row">
+            <label for="tagline">Tagline</label>
+            <input type="text" id="tagline" name="tagline">
+        </div>
+        <div class="form-row">
+            <label for="short_description">Short Description</label>
+            <textarea id="short_description" name="short_description"></textarea>
+        </div>
+        <div class="form-row">
+            <label for="contact_whatsapp">WhatsApp</label>
+            <input type="text" id="contact_whatsapp" name="contact_whatsapp">
+        </div>
+        <div class="form-row">
+            <label for="instagram_handle">Instagram</label>
+            <input type="text" id="instagram_handle" name="instagram_handle">
+        </div>
+        <div class="form-row">
+            <span>Theme Choice</span>
+            <label><input type="radio" id="theme_classic" name="theme_choice" value="classic"> Classic</label>
+            <label><input type="radio" id="theme_kiroween" name="theme_choice" value="kiroween"> Kiroween</label>
+        </div>
+        <div class="form-row menu-row">
+            <label for="menu_item_name_0">Menu Item 1 Name</label>
+            <input type="text" id="menu_item_name_0" name="menu_item_name[]">
+            <label for="menu_item_price_0">Price</label>
+            <input type="text" id="menu_item_price_0" name="menu_item_price[]">
+        </div>
+        <div class="form-row menu-row">
+            <label for="menu_item_name_1">Menu Item 2 Name</label>
+            <input type="text" id="menu_item_name_1" name="menu_item_name[]">
+            <label for="menu_item_price_1">Price</label>
+            <input type="text" id="menu_item_price_1" name="menu_item_price[]">
+        </div>
+    </form>
+
+    <div class="form-row" style="margin-top: 1rem;">
+        <button id="updatePreviewBtn" type="button">Update Preview (used by preview.js)</button>
+    </div>
+
+    <iframe id="previewFrame" title="Preview Frame" style="width:100%;height:200px;margin-top:1rem;border:1px solid #ccc;"></iframe>
+
+    <!-- Load required modules for buildSiteArtifacts and preview.js -->
+    <script src="public/js/sanitization.js"></script>
+    <script src="public/js/validation.js"></script>
+    <script src="public/js/template-engine.js"></script>
+    <script src="public/js/file-writer.js"></script>
+    <script src="public/js/generator.js"></script>
+    <script src="public/js/preview.js"></script>
+
+    <script>
+        const results = [];
+
+        async function test(name, fn) {
+            try {
+                const result = await fn();
+                results.push({ name, passed: result.passed, message: result.message || '' });
+            } catch (error) {
+                results.push({ name, passed: false, message: error && error.message ? error.message : String(error) });
+            }
+        }
+
+        function renderResults() {
+            const container = document.getElementById('testResults');
+            container.innerHTML = '';
+
+            let passCount = 0;
+            let failCount = 0;
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = `test-section test-result ${result.passed ? 'pass' : 'fail'}`;
+                div.innerHTML = `
+                    <strong>${result.passed ? '✓ PASS' : '✗ FAIL'}: ${result.name}</strong>
+                    ${result.message ? `<pre>${result.message}</pre>` : ''}
+                `;
+                container.appendChild(div);
+                if (result.passed) passCount++; else failCount++;
+            });
+
+            const summary = document.createElement('div');
+            summary.className = 'test-section summary';
+            summary.innerHTML = `
+                <h2>Test Summary</h2>
+                <p>Passed: ${passCount} | Failed: ${failCount} | Total: ${results.length}</p>
+            `;
+            container.insertBefore(summary, container.firstChild);
+        }
+
+        async function runTests() {
+            // Sanity check: buildSiteArtifacts should exist
+            if (typeof window.buildSiteArtifacts !== 'function') {
+                results.push({
+                    name: 'buildSiteArtifacts is available on window',
+                    passed: false,
+                    message: 'window.buildSiteArtifacts is not a function. Make sure generator.js loaded correctly.'
+                });
+                renderResults();
+                return;
+            }
+
+            // -------- Test 1: buildSiteArtifacts returns correct object shape --------
+            await test('buildSiteArtifacts returns { html, css, menuJson, instructionsTxt }', async () => {
+                const sampleFormData = {
+                    business_name: 'Test Coffee Shop',
+                    business_type: 'coffee_shop',
+                    tagline: 'Your Daily Dose of Happiness',
+                    short_description: 'We serve the best coffee in town with a cozy atmosphere.',
+                    contact_whatsapp: '628123456789',
+                    instagram_handle: 'testcoffee',
+                    theme_choice: 'classic',
+                    menu_items: [
+                        { name: 'Espresso', price: 'Rp 25,000' },
+                        { name: 'Cappuccino', price: 'Rp 30,000' }
+                    ]
+                };
+
+                const artifacts = await window.buildSiteArtifacts(sampleFormData);
+                const requiredProps = ['html', 'css', 'menuJson', 'instructionsTxt'];
+                const hasAllProps = artifacts && typeof artifacts === 'object' &&
+                    requiredProps.every(prop => Object.prototype.hasOwnProperty.call(artifacts, prop));
+
+                return {
+                    passed: hasAllProps,
+                    message: hasAllProps
+                        ? JSON.stringify(Object.keys(artifacts), null, 2)
+                        : 'Returned value was: ' + JSON.stringify(artifacts, null, 2)
+                };
+            });
+
+            // -------- Test 2: buildSiteArtifacts generates correct HTML from form data --------
+            await test('buildSiteArtifacts generates correct HTML based on form data', async () => {
+                const sampleFormData = {
+                    business_name: 'HTML Test Cafe',
+                    business_type: 'coffee_shop',
+                    tagline: 'Perfect HTML Every Time',
+                    short_description: 'Serving tests and assertions with every cup.',
+                    contact_whatsapp: '620011223344',
+                    instagram_handle: 'htmltestcafe',
+                    theme_choice: 'classic',
+                    menu_items: [
+                        { name: 'Unit Test Espresso', price: 'Rp 10,000' },
+                        { name: 'Integration Latte', price: 'Rp 20,000' }
+                    ]
+                };
+
+                const artifacts = await window.buildSiteArtifacts(sampleFormData);
+                const html = artifacts.html || '';
+
+                const checks = [
+                    html.includes('<!DOCTYPE html>'),
+                    html.includes('HTML Test Cafe'),
+                    html.includes('Perfect HTML Every Time'),
+                    html.includes('Unit Test Espresso'),
+                    html.includes('Rp 10,000'),
+                    html.includes('Integration Latte'),
+                    html.includes('Rp 20,000'),
+                    html.includes('https://wa.me/620011223344'),
+                    html.includes('https://instagram.com/htmltestcafe')
+                ];
+
+                const passed = checks.every(Boolean);
+                return {
+                    passed,
+                    message: passed ? 'HTML contained all expected dynamic content.' : html.slice(0, 500)
+                };
+            });
+
+            // -------- Test 3: buildSiteArtifacts generates CSS for selected theme --------
+            await test('buildSiteArtifacts generates correct CSS for selected theme', async () => {
+                const baseData = {
+                    business_name: 'Theme Test Biz',
+                    business_type: 'coffee_shop',
+                    tagline: 'Theme test',
+                    short_description: 'Testing CSS themes.',
+                    contact_whatsapp: '620000000000',
+                    instagram_handle: 'themetest',
+                    menu_items: []
+                };
+
+                const classicArtifacts = await window.buildSiteArtifacts({
+                    ...baseData,
+                    theme_choice: 'classic'
+                });
+                const kiroweenArtifacts = await window.buildSiteArtifacts({
+                    ...baseData,
+                    theme_choice: 'kiroween'
+                });
+
+                const classicCss = classicArtifacts.css || '';
+                const kiroweenCss = kiroweenArtifacts.css || '';
+
+                const classicHasToken = classicCss.includes('Classic Theme - Light, Professional Styling') ||
+                    classicCss.includes('--primary-blue');
+                const kiroweenHasToken = kiroweenCss.includes('Kiroween Theme - Dark, Modern, Halloween-Inspired Styling') ||
+                    kiroweenCss.includes('--primary-orange');
+
+                const areDifferent = classicCss !== kiroweenCss;
+                const passed = classicHasToken && kiroweenHasToken && areDifferent;
+
+                return {
+                    passed,
+                    message: passed
+                        ? 'Classic and Kiroween CSS both loaded and differ as expected.'
+                        : 'classicCss sample:\n' + classicCss.slice(0, 200) + '\n\nkiroweenCss sample:\n' + kiroweenCss.slice(0, 200)
+                };
+            });
+
+            // -------- Test 4: collectFormData in preview.js extracts data correctly --------
+            await test('preview.collectFormData extracts data from HTML form elements', async () => {
+                const form = document.getElementById('websiteForm');
+
+                // Populate form fields
+                form.business_name.value = 'Preview Test Shop';
+                form.business_type.value = 'barber';
+                form.tagline.value = 'Sharp & Stylish';
+                form.short_description.value = 'We test previews like we cut hair: precisely.';
+                form.contact_whatsapp.value = '620099887766';
+                form.instagram_handle.value = 'previewtestshop';
+
+                document.getElementById('theme_classic').checked = true;
+
+                document.getElementById('menu_item_name_0').value = 'Preview Cut';
+                document.getElementById('menu_item_price_0').value = 'Rp 50,000';
+                document.getElementById('menu_item_name_1').value = 'Preview Shave';
+                document.getElementById('menu_item_price_1').value = 'Rp 40,000';
+
+                if (!window.PreviewTest || typeof window.PreviewTest.collectFormData !== 'function') {
+                    return {
+                        passed: false,
+                        message: 'window.PreviewTest.collectFormData is not available.'
+                    };
+                }
+
+                const data = window.PreviewTest.collectFormData(form);
+
+                const passed =
+                    data.business_name === 'Preview Test Shop' &&
+                    data.business_type === 'barber' &&
+                    data.tagline === 'Sharp & Stylish' &&
+                    data.short_description === 'We test previews like we cut hair: precisely.' &&
+                    data.contact_whatsapp === '620099887766' &&
+                    data.instagram_handle === 'previewtestshop' &&
+                    data.theme_choice === 'classic' &&
+                    Array.isArray(data.menu_items) &&
+                    data.menu_items.length === 2 &&
+                    data.menu_items[0].name === 'Preview Cut' &&
+                    data.menu_items[0].price === 'Rp 50,000' &&
+                    data.menu_items[1].name === 'Preview Shave' &&
+                    data.menu_items[1].price === 'Rp 40,000';
+
+                return {
+                    passed,
+                    message: JSON.stringify(data, null, 2)
+                };
+            });
+
+            // -------- Test 5: updatePreview updates iframe with generated content --------
+            await test('preview.updatePreview updates iframe with generated content', async () => {
+                if (!window.PreviewTest || typeof window.PreviewTest.updatePreview !== 'function') {
+                    return {
+                        passed: false,
+                        message: 'window.PreviewTest.updatePreview is not available.'
+                    };
+                }
+
+                const form = document.getElementById('websiteForm');
+                const iframe = document.getElementById('previewFrame');
+
+                form.business_name.value = 'Iframe Test Cafe';
+                form.business_type.value = 'coffee_shop';
+                form.tagline.value = 'Preview in an iframe';
+                form.short_description.value = 'Testing iframe content.';
+                form.contact_whatsapp.value = '620012345678';
+                form.instagram_handle.value = 'iframetestcafe';
+                document.getElementById('theme_kiroween').checked = true;
+
+                // Stub buildSiteArtifacts so we control the output and avoid network calls
+                const originalBuild = window.buildSiteArtifacts;
+                window.buildSiteArtifacts = async () => ({
+                    html: '<div id="test-content">Iframe Test Cafe</div>',
+                    css: 'body { background: rgb(1, 2, 3); }',
+                    menuJson: '{}',
+                    instructionsTxt: 'Test instructions'
+                });
+
+                try {
+                    await window.PreviewTest.updatePreview();
+                    const srcdoc = iframe.srcdoc || '';
+
+                    const passed =
+                        srcdoc.includes('<!DOCTYPE html>') &&
+                        srcdoc.includes('<style>body { background: rgb(1, 2, 3); }</style>') &&
+                        srcdoc.includes('<div id="test-content">Iframe Test Cafe</div>');
+
+                    return {
+                        passed,
+                        message: passed ? 'iframe.srcdoc contains expected HTML and CSS.' : srcdoc.slice(0, 500)
+                    };
+                } finally {
+                    // Restore original function
+                    window.buildSiteArtifacts = originalBuild;
+                }
+            });
+
+            renderResults();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', runTests);
+        } else {
+            runTests();
+        }
+    </script>
+</body>
+</html>

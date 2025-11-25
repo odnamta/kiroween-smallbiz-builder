@@ -107,6 +107,14 @@ ${artifacts.html}
         }
     }
 
+    // Expose internal functions for testing purposes
+    if (typeof window !== 'undefined') {
+        window.PreviewTest = {
+            collectFormData,
+            updatePreview
+        };
+    }
+
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
