@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{short_description}}">
-    <title>{{business_name}}</title>
+    <meta name="theme-color" content="#ff6b35">
+    <meta property="og:title" content="{{business_name}}">
+    <meta property="og:description" content="{{tagline}}">
+    <meta property="og:type" content="website">
+    <title>{{business_name}} | {{tagline}}</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -48,14 +52,14 @@
                    aria-label="Contact us on WhatsApp"
                    target="_blank"
                    rel="noopener noreferrer">
-                    WhatsApp Us
+                    📱 WhatsApp Us
                 </a>
                 <a href="https://instagram.com/{{instagram_handle}}" 
                    class="instagram-link"
                    aria-label="Follow us on Instagram"
                    target="_blank"
                    rel="noopener noreferrer">
-                    Follow on Instagram
+                    📸 Follow on Instagram
                 </a>
             </div>
         </section>
@@ -63,6 +67,7 @@
     
     <footer role="contentinfo">
         <p>&copy; 2025 {{business_name}}. All rights reserved.</p>
+        <p class="powered-by">Built with 🎃 Kiroween Builder</p>
     </footer>
 </body>
 </html>

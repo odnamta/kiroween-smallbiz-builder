@@ -3,8 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code-Free Website Builder</title>
+    <title>🎃 Kiroween Website Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ========================================
+           KIROWEEN SPOOKY FORM STYLES
+           Halloween-themed website builder UI
+           ======================================== */
+        
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: rgba(15, 15, 25, 0.95);
+            --bg-input: rgba(20, 20, 35, 0.9);
+            --orange-primary: #ff6b35;
+            --orange-glow: rgba(255, 107, 53, 0.4);
+            --purple-primary: #9b59b6;
+            --purple-glow: rgba(155, 89, 182, 0.3);
+            --green-accent: #2ecc71;
+            --red-error: #e74c3c;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0b0;
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --border-focus: #ff6b35;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -12,96 +36,236 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #050816;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
             min-height: 100vh;
             line-height: 1.6;
+            color: var(--text-primary);
+            overflow-x: hidden;
         }
 
+        /* Animated background with floating ghosts */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, var(--purple-glow) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, var(--orange-glow) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.8) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: -1;
+            animation: bgPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Floating ghost particles */
+        .ghost-particle {
+            position: fixed;
+            font-size: 1.5rem;
+            opacity: 0.15;
+            pointer-events: none;
+            animation: floatGhost 15s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes floatGhost {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.15; }
+            90% { opacity: 0.15; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Flickering effect for spooky elements */
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            41% { opacity: 1; }
+            42% { opacity: 0.8; }
+            43% { opacity: 1; }
+            45% { opacity: 0.3; }
+            46% { opacity: 1; }
+        }
+
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes skeletonShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px var(--orange-glow); }
+            50% { box-shadow: 0 0 40px var(--orange-glow), 0 0 60px var(--purple-glow); }
+        }
+
+        /* App Shell */
         .app-shell {
             min-height: 100vh;
             padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            background: #050816;
-            color: #f9fafb;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            gap: 20px;
         }
 
+        /* Spooky Header */
         .app-header {
             text-align: center;
-            padding: 16px 0;
+            padding: 20px 0;
+            position: relative;
         }
 
+        .app-header h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: var(--orange-primary);
+            text-shadow: 
+                0 0 10px var(--orange-glow),
+                0 0 20px var(--orange-glow),
+                0 0 40px var(--orange-glow);
+            animation: flicker 5s infinite, gentleFloat 3s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        .app-header h1::before {
+            content: '🎃';
+            margin-right: 10px;
+        }
+
+        .app-header h1::after {
+            content: '👻';
+            margin-left: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-top: 8px;
+        }
+
+        /* Main Layout */
         .app-main {
             display: grid;
-            grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.1fr);
-            gap: 16px;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+            gap: 24px;
+            flex: 1;
         }
 
+        /* Card Styles */
         .form-column,
         .preview-column {
-            background: rgba(15, 23, 42, 0.96);
+            background: var(--bg-card);
             border-radius: 16px;
-            padding: 16px 18px;
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+            padding: 24px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
         }
 
+        /* Spooky corner decorations */
+        .form-column::before,
+        .preview-column::before {
+            content: '🕸️';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            font-size: 2rem;
+            opacity: 0.3;
+            transform: rotate(-45deg);
+        }
+
+        .form-column::after,
+        .preview-column::after {
+            content: '🕷️';
+            position: absolute;
+            top: 30px;
+            left: 10px;
+            font-size: 1rem;
+            opacity: 0.2;
+            animation: gentleFloat 4s ease-in-out infinite;
+        }
+
+        /* Preview Header */
         .preview-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
         }
 
         .preview-header h2 {
             font-size: 1.25rem;
-            color: #f9fafb;
-            margin: 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-header h2::before {
+            content: '👁️';
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--green-accent);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green-accent);
+            border-radius: 50%;
+            animation: pulseGlow 2s infinite;
         }
 
         .preview-frame {
             width: 100%;
-            height: 480px;
+            height: calc(100vh - 280px);
+            min-height: 500px;
             border-radius: 12px;
-            border: none;
+            border: 2px solid var(--border-subtle);
             background: #ffffff;
+            transition: border-color 0.3s;
         }
 
-        .container {
-            max-width: 100%;
-            margin: 0;
-            background: transparent;
-            border-radius: 0;
-            box-shadow: none;
-            padding: 0;
+        .preview-frame:hover {
+            border-color: var(--orange-primary);
         }
 
-        h1 {
-            color: #f9fafb;
-            margin-bottom: 0.5rem;
-            font-size: 2rem;
-        }
-
-        .subtitle {
-            color: #cbd5e1;
-            margin-bottom: 0;
-            font-size: 1rem;
-        }
-
+        /* Form Styles */
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
+            position: relative;
         }
 
         label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #f9fafb;
+            color: var(--text-primary);
             font-weight: 600;
             font-size: 0.95rem;
+        }
+
+        label .required {
+            color: var(--orange-primary);
+            text-shadow: 0 0 10px var(--orange-glow);
         }
 
         .field-label-row {
@@ -109,90 +273,47 @@
             justify-content: space-between;
             align-items: center;
             gap: 8px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .field-label-row label {
             margin-bottom: 0;
         }
 
-        .ai-helper-btn {
-            border: none;
-            border-radius: 999px;
-            padding: 4px 10px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            background: #4b5563;
-            color: #f9fafb;
-            transition: opacity 0.15s ease, transform 0.08s ease;
-            white-space: nowrap;
-        }
-
-        .ai-helper-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .ai-helper-btn:active {
-            transform: translateY(0);
-        }
-
-        .tone-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.75rem;
-            opacity: 0.9;
-        }
-
-        .tone-toggle-label {
-            color: #94a3b8;
-        }
-
-        .tone-select {
-            border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.65);
-            padding: 2px 8px;
-            background: rgba(15, 23, 42, 0.9);
-            color: #e5e7eb;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-
-        .tone-select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        label .required {
-            color: #e74c3c;
-        }
-
+        /* Input Styles with Spooky Hover */
         input[type="text"],
         select,
         textarea {
             width: 100%;
-            padding: 0.75rem;
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-subtle);
+            border-radius: 8px;
             font-size: 1rem;
             font-family: inherit;
-            transition: border-color 0.3s;
-            background: rgba(255, 255, 255, 0.05);
-            color: #f9fafb;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:hover,
+        select:hover,
+        textarea:hover {
+            border-color: var(--purple-primary);
+            box-shadow: 0 0 15px var(--purple-glow);
         }
 
         input[type="text"]:focus,
         select:focus,
         textarea:focus {
             outline: none;
-            border-color: #667eea;
-            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--orange-primary);
+            box-shadow: 0 0 20px var(--orange-glow);
+            background: rgba(30, 30, 50, 0.9);
         }
 
         select option {
-            background: #1e293b;
-            color: #f9fafb;
+            background: #1a1a2e;
+            color: var(--text-primary);
         }
 
         textarea {
@@ -200,6 +321,66 @@
             min-height: 100px;
         }
 
+        /* AI Helper Buttons */
+        .ai-helper-btn {
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--purple-primary), #7b4397);
+            color: white;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-helper-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .ai-helper-btn:hover::before {
+            left: 100%;
+        }
+
+        .ai-helper-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--purple-glow);
+        }
+
+        /* Tone Toggle */
+        .tone-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+        }
+
+        .tone-toggle-label {
+            color: var(--text-secondary);
+        }
+
+        .tone-select {
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            padding: 4px 10px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            min-height: auto;
+            min-width: auto;
+        }
+
+        /* Theme Selector - Spooky Cards */
         .theme-selector {
             display: flex;
             gap: 1rem;
@@ -208,7 +389,7 @@
 
         .theme-option {
             flex: 1;
-            min-width: 200px;
+            min-width: 180px;
         }
 
         .theme-option input[type="radio"] {
@@ -217,40 +398,70 @@
 
         .theme-option label {
             display: block;
-            padding: 1rem;
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
+            padding: 1.25rem;
+            border: 2px solid var(--border-subtle);
+            border-radius: 12px;
             cursor: pointer;
             text-align: center;
-            transition: all 0.3s;
-            font-weight: 500;
-            background: rgba(255, 255, 255, 0.05);
-            color: #f9fafb;
+            transition: all 0.3s ease;
+            background: var(--bg-input);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-option label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,107,53,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .theme-option input[type="radio"]:checked + label {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.2);
-            color: #a5b4fc;
+            border-color: var(--orange-primary);
+            box-shadow: 0 0 30px var(--orange-glow);
+        }
+
+        .theme-option input[type="radio"]:checked + label::before {
+            opacity: 1;
         }
 
         .theme-option label:hover {
-            border-color: #667eea;
-            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--purple-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
+        .theme-option label strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            color: var(--orange-primary);
+        }
+
+        .theme-option label span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Menu Items Section */
         .menu-items-section {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(0, 0, 0, 0.2);
             padding: 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-subtle);
+            position: relative;
         }
 
         .menu-items-section h2 {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             margin-bottom: 1rem;
-            color: #f9fafb;
+            color: var(--text-primary);
         }
 
         .menu-item {
@@ -258,6 +469,16 @@
             gap: 1rem;
             margin-bottom: 1rem;
             align-items: flex-start;
+            padding: 1rem;
+            background: var(--bg-input);
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            border-color: var(--purple-primary);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
 
         .menu-item-fields {
@@ -269,7 +490,7 @@
 
         .menu-item-field {
             flex: 1;
-            min-width: 150px;
+            min-width: 140px;
         }
 
         .menu-item-field label {
@@ -277,41 +498,86 @@
             margin-bottom: 0.25rem;
         }
 
+        /* Buttons */
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             min-height: 44px;
             min-width: 44px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn-primary {
-            background: #667eea;
+            background: linear-gradient(135deg, var(--orange-primary), #ff8c42);
             color: white;
             width: 100%;
+            font-size: 1.1rem;
+            padding: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .btn-primary:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px var(--orange-glow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            border-color: var(--orange-primary);
+            box-shadow: 0 5px 20px var(--orange-glow);
+        }
+
+        .btn-preset {
+            background: linear-gradient(135deg, var(--purple-primary), #7b4397);
+            color: white;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-preset:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--purple-glow);
+        }
+
+        .btn-preset:disabled {
+            background: #4a4a5a;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .btn-remove {
-            background: #e74c3c;
+            background: linear-gradient(135deg, var(--red-error), #c0392b);
             color: white;
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
@@ -320,21 +586,22 @@
         }
 
         .btn-remove:hover {
-            background: #c0392b;
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
         }
 
         .btn-add {
-            background: #27ae60;
+            background: linear-gradient(135deg, var(--green-accent), #27ae60);
             color: white;
             margin-top: 0.5rem;
         }
 
         .btn-add:hover {
-            background: #229954;
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
         }
 
+        /* Error Messages */
         .error-message {
-            color: #e74c3c;
+            color: var(--red-error);
             font-size: 0.85rem;
             margin-top: 0.25rem;
             display: none;
@@ -344,7 +611,8 @@
         .form-group.error select,
         .form-group.error textarea,
         .menu-item-field.error input {
-            border-color: #e74c3c;
+            border-color: var(--red-error);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
         }
 
         .form-group.error .error-message,
@@ -352,28 +620,83 @@
             display: block;
         }
 
-        /* Mobile responsive */
-        @media (max-width: 900px) {
-            .app-shell {
-                padding: 16px;
-            }
+        /* Messages */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
 
+        .message.success {
+            background: rgba(46, 204, 113, 0.15);
+            color: #86efac;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .message.error {
+            background: rgba(231, 76, 60, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .helper-text {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .menu-helper-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Skeleton Loading Animation */
+        .skeleton-loading {
+            background: linear-gradient(90deg, var(--bg-input) 25%, rgba(255,255,255,0.1) 50%, var(--bg-input) 75%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        /* Generating State */
+        .generating .btn-primary {
+            background: linear-gradient(135deg, var(--purple-primary), var(--orange-primary));
+            animation: pulseGlow 1s infinite;
+        }
+
+        .generating .btn-primary::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
             .app-main {
                 grid-template-columns: 1fr;
             }
 
             .preview-frame {
-                height: 380px;
+                height: 400px;
+                min-height: 400px;
             }
         }
 
         @media (max-width: 768px) {
             .app-shell {
-                padding: 12px;
+                padding: 16px;
             }
 
-            h1 {
-                font-size: 1.5rem;
+            .app-header h1 {
+                font-size: 2rem;
             }
 
             .menu-item {
@@ -395,6 +718,15 @@
         }
 
         @media (max-width: 480px) {
+            .app-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .app-header h1::before,
+            .app-header h1::after {
+                display: none;
+            }
+
             .menu-item-fields {
                 flex-direction: column;
             }
@@ -402,218 +734,196 @@
             .menu-item-field {
                 width: 100%;
             }
+
+            .field-label-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
         }
 
-        .message {
-            padding: 1rem;
-            border-radius: 6px;
-            margin-top: 1rem;
-            font-weight: 500;
-        }
-
-        .message.success {
-            background: rgba(34, 197, 94, 0.15);
-            color: #86efac;
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-
-        .message.error {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-preset {
-            background: #27ae60;
-            color: white;
-            width: 100%;
-            margin-bottom: 0.5rem;
-        }
-
-        .btn-preset:hover:not(:disabled) {
-            background: #229954;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
-        }
-
-        .btn-preset:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .helper-text {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-            font-style: italic;
-        }
-
-        .menu-helper-text {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+        /* Spooky cursor trail effect */
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--orange-primary);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.5;
+            z-index: 9999;
+            transition: transform 0.1s, opacity 0.5s;
         }
     </style>
 </head>
 <body>
+    <!-- Floating ghost particles -->
+    <div class="ghost-particle" style="left: 10%; animation-delay: 0s;">👻</div>
+    <div class="ghost-particle" style="left: 25%; animation-delay: 3s;">🦇</div>
+    <div class="ghost-particle" style="left: 40%; animation-delay: 6s;">🎃</div>
+    <div class="ghost-particle" style="left: 55%; animation-delay: 9s;">💀</div>
+    <div class="ghost-particle" style="left: 70%; animation-delay: 12s;">🕷️</div>
+    <div class="ghost-particle" style="left: 85%; animation-delay: 2s;">👻</div>
+    <div class="ghost-particle" style="left: 95%; animation-delay: 7s;">🦇</div>
+
     <div class="app-shell">
         <header class="app-header">
-            <h1>Code-Free Website Builder</h1>
-            <p class="subtitle">Create a professional landing page for your business in minutes</p>
+            <h1>Kiroween Builder</h1>
+            <p class="subtitle">Conjure a professional landing page for your business in minutes</p>
         </header>
         
         <main class="app-main">
             <section class="form-column">
-                <div class="container">
-                    <form id="websiteForm">
-            <!-- Business Name -->
-            <div class="form-group">
-                <label for="business_name">Business Name <span class="required">*</span></label>
-                <input type="text" id="business_name" name="business_name" required maxlength="100">
-                <div class="error-message">Please enter your business name</div>
-            </div>
-
-            <!-- Business Type -->
-            <div class="form-group">
-                <label for="business_type">Business Type <span class="required">*</span></label>
-                <select id="business_type" name="business_type" required>
-                    <option value="">Select your business type</option>
-                    <option value="coffee_shop">Coffee Shop</option>
-                    <option value="bakery">Bakery</option>
-                    <option value="barber_shop">Barber Shop</option>
-                    <option value="food_stall">Food Stall</option>
-                    <option value="laundry_service">Laundry Service</option>
-                    <option value="photographer_creator">Photographer/Creator</option>
-                </select>
-                <div class="error-message">Please select a business type</div>
-            </div>
-
-            <!-- Use Preset Button -->
-            <div class="form-group">
-                <button type="button" id="usePresetButton" class="btn btn-preset" onclick="applyPresetToForm()">
-                    Use Preset for Selected Business Type
-                </button>
-                <p class="helper-text">You can customize these after applying the preset</p>
-            </div>
-
-            <!-- Preset Feedback Message -->
-            <div id="presetFeedback" class="message" style="display: none;"></div>
-
-            <!-- Tagline -->
-            <div class="form-group">
-                <div class="field-label-row">
-                    <label for="tagline">Tagline <span class="required">*</span></label>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <div class="tone-toggle">
-                            <span class="tone-toggle-label">Tone:</span>
-                            <select id="toneMode" name="toneMode" class="tone-select">
-                                <option value="normal" selected>Normal</option>
-                                <option value="haunted">Haunted</option>
-                            </select>
-                        </div>
-                        <button type="button" id="autoTaglineBtn" class="ai-helper-btn">✨ Auto Tagline</button>
+                <form id="websiteForm">
+                    <!-- Business Name -->
+                    <div class="form-group">
+                        <label for="business_name">Business Name <span class="required">*</span></label>
+                        <input type="text" id="business_name" name="business_name" required maxlength="100" placeholder="e.g., Midnight Coffee House">
+                        <div class="error-message">Please enter your business name</div>
                     </div>
-                </div>
-                <input type="text" id="tagline" name="tagline" required maxlength="150" placeholder="e.g., Your Daily Dose of Happiness">
-                <div class="error-message">Please enter a tagline</div>
-            </div>
 
-            <!-- Short Description -->
-            <div class="form-group">
-                <div class="field-label-row">
-                    <label for="short_description">Short Description <span class="required">*</span></label>
-                    <button type="button" id="autoDescriptionBtn" class="ai-helper-btn">✨ Auto Description</button>
-                </div>
-                <textarea id="short_description" name="short_description" required maxlength="500" placeholder="Tell customers about your business..."></textarea>
-                <div class="error-message">Please enter a description</div>
-            </div>
-
-            <!-- WhatsApp Contact -->
-            <div class="form-group">
-                <label for="contact_whatsapp">WhatsApp Number <span class="required">*</span></label>
-                <input type="text" id="contact_whatsapp" name="contact_whatsapp" required maxlength="20" placeholder="e.g., 1234567890">
-                <div class="error-message">Please enter a valid WhatsApp number (digits only)</div>
-            </div>
-
-            <!-- Instagram Handle -->
-            <div class="form-group">
-                <label for="instagram_handle">Instagram Handle <span class="required">*</span></label>
-                <input type="text" id="instagram_handle" name="instagram_handle" required maxlength="30" placeholder="e.g., yourbusiness">
-                <div class="error-message">Please enter a valid Instagram handle (letters, numbers, and underscores only)</div>
-            </div>
-
-            <!-- Theme Selector -->
-            <div class="form-group">
-                <label>Choose Your Theme <span class="required">*</span></label>
-                <div class="theme-selector">
-                    <div class="theme-option">
-                        <input type="radio" id="theme_classic" name="theme_choice" value="classic" required>
-                        <label for="theme_classic">
-                            <strong>Classic</strong><br>
-                            Light & Professional
-                        </label>
+                    <!-- Business Type -->
+                    <div class="form-group">
+                        <label for="business_type">Business Type <span class="required">*</span></label>
+                        <select id="business_type" name="business_type" required>
+                            <option value="">Select your business type</option>
+                            <option value="coffee_shop">☕ Coffee Shop</option>
+                            <option value="bakery">🥐 Bakery</option>
+                            <option value="barber_shop">💈 Barber Shop</option>
+                            <option value="food_stall">🍜 Food Stall</option>
+                            <option value="laundry_service">🧺 Laundry Service</option>
+                            <option value="photographer_creator">📸 Photographer/Creator</option>
+                        </select>
+                        <div class="error-message">Please select a business type</div>
                     </div>
-                    <div class="theme-option">
-                        <input type="radio" id="theme_kiroween" name="theme_choice" value="kiroween" required>
-                        <label for="theme_kiroween">
-                            <strong>Kiroween</strong><br>
-                            Dark & Modern
-                        </label>
-                    </div>
-                </div>
-                <div class="error-message">Please select a theme</div>
-            </div>
 
-            <!-- Menu Items Section -->
-            <div class="menu-items-section">
-                <div class="field-label-row">
-                    <h2 style="margin: 0;">Menu Items <span class="required">*</span></h2>
-                    <button type="button" id="autoMenuBtn" class="ai-helper-btn">✨ Auto Menu Items</button>
-                </div>
-                <p class="menu-helper-text" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; display: none;">Optional: Add service items if desired</p>
-                <div id="menuItemsContainer">
-                    <!-- Initial menu item -->
-                    <div class="menu-item" data-item-index="0">
-                        <div class="menu-item-fields">
-                            <div class="menu-item-field">
-                                <label for="menu_item_name_0">Item Name <span class="required">*</span></label>
-                                <input type="text" id="menu_item_name_0" name="menu_item_name[]" required maxlength="100" placeholder="e.g., Espresso">
-                                <div class="error-message">Menu item name is required</div>
-                            </div>
-                            <div class="menu-item-field">
-                                <label for="menu_item_price_0">Price <span class="required">*</span></label>
-                                <input type="text" id="menu_item_price_0" name="menu_item_price[]" required maxlength="20" placeholder="e.g., $3.50">
-                                <div class="error-message">Menu item price is required</div>
+                    <!-- Use Preset Button -->
+                    <div class="form-group">
+                        <button type="button" id="usePresetButton" class="btn btn-preset" onclick="applyPresetToForm()">
+                            🎃 Use Haunted Preset
+                        </button>
+                        <p class="helper-text">Auto-fill with spooky sample content you can customize</p>
+                    </div>
+
+                    <!-- Preset Feedback Message -->
+                    <div id="presetFeedback" class="message" style="display: none;"></div>
+
+                    <!-- Tagline -->
+                    <div class="form-group">
+                        <div class="field-label-row">
+                            <label for="tagline">Tagline <span class="required">*</span></label>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <div class="tone-toggle">
+                                    <span class="tone-toggle-label">Tone:</span>
+                                    <select id="toneMode" name="toneMode" class="tone-select">
+                                        <option value="normal">Normal</option>
+                                        <option value="haunted" selected>🎃 Haunted</option>
+                                    </select>
+                                </div>
+                                <button type="button" id="autoTaglineBtn" class="ai-helper-btn">✨ Auto Tagline</button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-remove" onclick="removeMenuItem(0)" style="display: none;">Remove</button>
+                        <input type="text" id="tagline" name="tagline" required maxlength="150" placeholder="e.g., Where shadows meet great taste">
+                        <div class="error-message">Please enter a tagline</div>
                     </div>
-                </div>
-                <button type="button" class="btn btn-add" onclick="addMenuItem()">+ Add Menu Item</button>
-                <div class="error-message" id="menuItemsError">Please add at least one menu item</div>
-            </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary">Generate My Website</button>
-            
-            <!-- Generation Message -->
-            <div id="generationMessage" class="message" style="display: none; margin-top: 1rem; padding: 1rem; border-radius: 6px;"></div>
-        </form>
-                </div>
+                    <!-- Short Description -->
+                    <div class="form-group">
+                        <div class="field-label-row">
+                            <label for="short_description">Short Description <span class="required">*</span></label>
+                            <button type="button" id="autoDescriptionBtn" class="ai-helper-btn">✨ Auto Description</button>
+                        </div>
+                        <textarea id="short_description" name="short_description" required maxlength="500" placeholder="Tell customers about your mysteriously wonderful business..."></textarea>
+                        <div class="error-message">Please enter a description</div>
+                    </div>
+
+                    <!-- WhatsApp Contact -->
+                    <div class="form-group">
+                        <label for="contact_whatsapp">WhatsApp Number <span class="required">*</span></label>
+                        <input type="text" id="contact_whatsapp" name="contact_whatsapp" required maxlength="20" placeholder="e.g., 628123456789">
+                        <div class="error-message">Please enter a valid WhatsApp number (digits only)</div>
+                    </div>
+
+                    <!-- Instagram Handle -->
+                    <div class="form-group">
+                        <label for="instagram_handle">Instagram Handle <span class="required">*</span></label>
+                        <input type="text" id="instagram_handle" name="instagram_handle" required maxlength="30" placeholder="e.g., yourbusiness">
+                        <div class="error-message">Please enter a valid Instagram handle</div>
+                    </div>
+
+                    <!-- Theme Selector -->
+                    <div class="form-group">
+                        <label>Choose Your Theme <span class="required">*</span></label>
+                        <div class="theme-selector">
+                            <div class="theme-option">
+                                <input type="radio" id="theme_classic" name="theme_choice" value="classic" required>
+                                <label for="theme_classic">
+                                    <strong>☀️ Classic</strong>
+                                    <span>Light & Professional</span>
+                                </label>
+                            </div>
+                            <div class="theme-option">
+                                <input type="radio" id="theme_kiroween" name="theme_choice" value="kiroween" required checked>
+                                <label for="theme_kiroween">
+                                    <strong>🎃 Kiroween</strong>
+                                    <span>Dark & Haunting</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="error-message">Please select a theme</div>
+                    </div>
+
+                    <!-- Menu Items Section -->
+                    <div class="menu-items-section">
+                        <div class="field-label-row">
+                            <h2>🍽️ Menu Items <span class="required">*</span></h2>
+                            <button type="button" id="autoMenuBtn" class="ai-helper-btn">✨ Auto Menu</button>
+                        </div>
+                        <p class="menu-helper-text" id="menuHelperText" style="display: none;">Optional: Add service items if desired</p>
+                        <div id="menuItemsContainer">
+                            <!-- Initial menu item -->
+                            <div class="menu-item" data-item-index="0">
+                                <div class="menu-item-fields">
+                                    <div class="menu-item-field">
+                                        <label for="menu_item_name_0">Item Name <span class="required">*</span></label>
+                                        <input type="text" id="menu_item_name_0" name="menu_item_name[]" required maxlength="100" placeholder="e.g., Midnight Espresso">
+                                        <div class="error-message">Menu item name is required</div>
+                                    </div>
+                                    <div class="menu-item-field">
+                                        <label for="menu_item_price_0">Price <span class="required">*</span></label>
+                                        <input type="text" id="menu_item_price_0" name="menu_item_price[]" required maxlength="20" placeholder="e.g., Rp 25,000">
+                                        <div class="error-message">Menu item price is required</div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-remove" onclick="removeMenuItem(0)" style="display: none;">✕</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-add" onclick="addMenuItem()">+ Add Menu Item</button>
+                        <div class="error-message" id="menuItemsError">Please add at least one menu item</div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary">🎃 Generate My Haunted Website</button>
+                    
+                    <!-- Generation Message -->
+                    <div id="generationMessage" class="message" style="display: none;"></div>
+                </form>
             </section>
             
             <section class="preview-column">
                 <div class="preview-header">
                     <h2>Live Preview</h2>
-                    <button id="updatePreviewBtn" type="button" class="btn btn-secondary">Update Preview</button>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span>Auto-updating</span>
+                    </div>
                 </div>
                 <iframe id="previewFrame" title="Website Preview" class="preview-frame"></iframe>
             </section>
         </main>
     </div>
 
-    <!-- Load modules in order: sanitization, validation, template-engine, file-writer, presets, form-controller, generator, preview -->
+    <!-- Load modules -->
     <script src="js/sanitization.js"></script>
     <script src="js/validation.js"></script>
     <script src="js/template-engine.js"></script>
@@ -628,7 +938,6 @@
     <script type="module">
         import { initializeFormController } from './js/form-controller.js';
         
-        // Initialize form controller when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeFormController);
         } else {
@@ -660,11 +969,11 @@
                     </div>
                     <div class="menu-item-field">
                         <label for="menu_item_price_${menuItemCount}">Price <span class="required">*</span></label>
-                        <input type="text" id="menu_item_price_${menuItemCount}" name="menu_item_price[]" required maxlength="20" placeholder="e.g., $4.50">
+                        <input type="text" id="menu_item_price_${menuItemCount}" name="menu_item_price[]" required maxlength="20" placeholder="e.g., Rp 30,000">
                         <div class="error-message">Menu item price is required</div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-remove" onclick="removeMenuItem(${menuItemCount})">Remove</button>
+                <button type="button" class="btn btn-remove" onclick="removeMenuItem(${menuItemCount})">✕</button>
             `;
             
             container.appendChild(menuItem);
@@ -672,6 +981,7 @@
             
             updateRemoveButtons();
             attachValidationListeners();
+            triggerPreviewUpdate();
         }
 
         function removeMenuItem(index) {
@@ -687,6 +997,7 @@
             }
             
             updateRemoveButtons();
+            triggerPreviewUpdate();
         }
 
         function updateRemoveButtons() {
@@ -701,23 +1012,27 @@
         }
 
         function attachValidationListeners() {
-            // Add blur validation for all text inputs, textareas, and selects
             const fields = document.querySelectorAll('input[type="text"], textarea, select');
             fields.forEach(field => {
                 field.removeEventListener('blur', handleFieldBlur);
                 field.addEventListener('blur', handleFieldBlur);
+                // Auto-update preview on input
+                field.removeEventListener('input', triggerPreviewUpdate);
+                field.addEventListener('input', debounce(triggerPreviewUpdate, 500));
             });
 
-            // Add change validation for radio buttons
             const radioButtons = document.querySelectorAll('input[type="radio"]');
             radioButtons.forEach(radio => {
                 radio.removeEventListener('change', handleRadioChange);
                 radio.addEventListener('change', handleRadioChange);
+                radio.addEventListener('change', triggerPreviewUpdate);
             });
         }
 
         function handleFieldBlur(e) {
-            Validation.validateField(e.target);
+            if (typeof Validation !== 'undefined') {
+                Validation.validateField(e.target);
+            }
         }
 
         function handleRadioChange(e) {
@@ -726,40 +1041,53 @@
                 if (themeGroup) {
                     themeGroup.classList.remove('error');
                     const errorMsg = themeGroup.querySelector('.error-message');
-                    if (errorMsg) {
-                        errorMsg.style.display = 'none';
-                    }
+                    if (errorMsg) errorMsg.style.display = 'none';
                 }
             }
         }
 
-        // Note: Form submission is now handled by generator.js module
+        // Debounce function for auto-preview
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Trigger preview update
+        function triggerPreviewUpdate() {
+            if (typeof window.PreviewTest !== 'undefined' && typeof window.PreviewTest.updatePreview === 'function') {
+                window.PreviewTest.updatePreview();
+            }
+        }
 
         // Initialize
         updateRemoveButtons();
         attachValidationListeners();
+        
+        // Initial preview update after page load
+        setTimeout(triggerPreviewUpdate, 1000);
     </script>
-    
-    <!-- PRESET FUNCTION OVERRIDE -->
+
+    <!-- Preset Function -->
     <script type="module">
         import { getPreset } from './js/presets.js';
         
         window.applyPresetToForm = function() {
-            console.log('applyPresetToForm called');
-            
-            // Get selected business type
             const businessTypeSelect = document.getElementById('business_type');
             const businessType = businessTypeSelect ? businessTypeSelect.value : '';
-            console.log('Selected type:', businessType);
             
             if (!businessType) {
                 alert('Please select a business type first');
                 return;
             }
             
-            // Get preset data
             const preset = getPreset(businessType);
-            console.log('Preset object:', preset);
             
             if (!preset) {
                 alert('No preset available for this business type');
@@ -768,38 +1096,23 @@
             
             // Set tagline
             const taglineField = document.getElementById('tagline');
-            if (taglineField) {
-                taglineField.value = preset.default_tagline;
-                console.log('Tagline set to:', preset.default_tagline);
-            } else {
-                console.error('Tagline field not found');
-            }
+            if (taglineField) taglineField.value = preset.default_tagline;
             
             // Set description
             const descriptionField = document.getElementById('short_description');
-            if (descriptionField) {
-                descriptionField.value = preset.default_short_description;
-                console.log('Description set to:', preset.default_short_description);
-            } else {
-                console.error('Description field not found');
-            }
+            if (descriptionField) descriptionField.value = preset.default_short_description;
             
             // Populate menu items
             if (preset.default_menu_items && preset.default_menu_items.length > 0) {
-                console.log('Populating menu items:', preset.default_menu_items);
-                
                 const container = document.getElementById('menuItemsContainer');
                 if (container) {
-                    // Clear existing items
                     container.innerHTML = '';
                     
-                    // Add each menu item
                     preset.default_menu_items.forEach((item, index) => {
                         const menuItem = document.createElement('div');
                         menuItem.className = 'menu-item';
                         menuItem.setAttribute('data-item-index', index);
                         
-                        // Escape HTML to prevent XSS
                         const escapeName = item.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
                         const escapePrice = item.price.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
                         
@@ -807,48 +1120,41 @@
                             <div class="menu-item-fields">
                                 <div class="menu-item-field">
                                     <label for="menu_item_name_${index}">Item Name <span class="required">*</span></label>
-                                    <input type="text" id="menu_item_name_${index}" name="menu_item_name[]" required maxlength="100" placeholder="e.g., Espresso" value="${escapeName}">
+                                    <input type="text" id="menu_item_name_${index}" name="menu_item_name[]" required maxlength="100" value="${escapeName}">
                                     <div class="error-message">Menu item name is required</div>
                                 </div>
                                 <div class="menu-item-field">
                                     <label for="menu_item_price_${index}">Price <span class="required">*</span></label>
-                                    <input type="text" id="menu_item_price_${index}" name="menu_item_price[]" required maxlength="20" placeholder="e.g., $3.50" value="${escapePrice}">
+                                    <input type="text" id="menu_item_price_${index}" name="menu_item_price[]" required maxlength="20" value="${escapePrice}">
                                     <div class="error-message">Menu item price is required</div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-remove" onclick="removeMenuItem(${index})">Remove</button>
+                            <button type="button" class="btn btn-remove" onclick="removeMenuItem(${index})">✕</button>
                         `;
                         
                         container.appendChild(menuItem);
-                        console.log(`Added menu item ${index}:`, item.name);
                     });
                     
-                    // Update global counter
-                    if (typeof window.menuItemCount !== 'undefined') {
-                        window.menuItemCount = preset.default_menu_items.length;
-                    }
-                    
-                    // Update remove buttons
-                    if (typeof window.updateRemoveButtons === 'function') {
-                        window.updateRemoveButtons();
-                    }
-                    
-                    // Reattach validation
-                    if (typeof window.attachValidationListeners === 'function') {
-                        window.attachValidationListeners();
-                    }
-                    
-                    console.log('Menu items populated successfully');
-                } else {
-                    console.error('Menu container not found');
+                    window.menuItemCount = preset.default_menu_items.length;
+                    if (typeof window.updateRemoveButtons === 'function') window.updateRemoveButtons();
+                    if (typeof window.attachValidationListeners === 'function') window.attachValidationListeners();
                 }
             }
             
-            alert('Preset applied successfully! You can customize these fields.');
-            console.log('Preset applied successfully');
+            // Show feedback
+            const feedback = document.getElementById('presetFeedback');
+            if (feedback) {
+                feedback.textContent = '🎃 Preset applied! Customize the content above, then generate your website.';
+                feedback.className = 'message success';
+                feedback.style.display = 'block';
+                setTimeout(() => { feedback.style.display = 'none'; }, 4000);
+            }
+            
+            // Trigger preview update
+            setTimeout(() => {
+                if (typeof window.triggerPreviewUpdate === 'function') window.triggerPreviewUpdate();
+            }, 100);
         };
-        
-        console.log('Preset function installed');
     </script>
 </body>
 </html>

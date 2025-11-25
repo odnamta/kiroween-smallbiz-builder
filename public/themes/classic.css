@@ -271,3 +271,69 @@ textarea {
   min-height: 44px;
   min-width: 44px;
 }
+
+
+/* Menu empty message */
+.menu-empty-message {
+  color: var(--medium-gray);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Powered by badge */
+.powered-by {
+  font-size: 0.75rem;
+  color: var(--medium-gray);
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+/* Hover effects */
+section {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--shadow-color);
+}
+
+.menu-list li {
+  transition: all 0.3s ease;
+}
+
+.menu-list li:hover {
+  background-color: #e8f0fe;
+  border-color: var(--primary-blue);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+    padding: 0;
+  }
+  
+  header, section, footer {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    page-break-inside: avoid;
+  }
+  
+  .contact-links a {
+    color: black;
+    background: #eee;
+  }
+}
