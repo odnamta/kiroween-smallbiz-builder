@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GhostHost UI Interaction Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #0a0a0f;
+            color: #f0f0f0;
+        }
+        h1 {
+            margin-bottom: 1rem;
+        }
+        .controls {
+            margin-bottom: 1rem;
+        }
+        button {
+            background-color: #ff6b35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #ff8c42;
+        }
+        .test-section {
+            background: #11111b;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+            border: 1px solid #333;
+        }
+        .test-result {
+            margin-top: 8px;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .pass {
+            background-color: #14532d;
+            border: 1px solid #22c55e;
+            color: #bbf7d0;
+        }
+        .fail {
+            background-color: #7f1d1d;
+            border: 1px solid #f87171;
+            color: #fee2e2;
+        }
+        .summary {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 4px;
+            background-color: #1f2937;
+            border: 1px solid #4b5563;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #4b5563;
+            border-radius: 6px;
+            margin-top: 16px;
+            background: #000;
+        }
+        .hint {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+        code {
+            background: #111827;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GhostHost UI Interaction Tests</h1>
+    <p>Run automated UI interaction tests against <code>public/index.html</code> (splash screen, Quick Start Guide, FAQ, and haunted preset feedback).</p>
+
+    <div class="controls">
+        <button onclick="runAllTests()">Run All Tests</button>
+        <span class="hint">Note: This will reload the app iframe to get a fresh state before testing.</span>
+    </div>
+
+    <div id="results"></div>
+
+    <div class="test-section">
+        <h2>App Under Test</h2>
+        <p>This iframe loads the main GhostHost app. Tests interact with its DOM.</p>
+        <iframe id="appFrame" src="public/index.html" title="GhostHost App"></iframe>
+    </div>
+
+    <script>
+        const results = [];
+
+        function addResult(name, passed, message) {
+            results.push({ name, passed, message });
+        }
+
+        function clearResults() {
+            results.length = 0;
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function renderResults() {
+            const container = document.getElementById('results');
+            container.innerHTML = '';
+
+            let passCount = 0;
+            let failCount = 0;
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = `test-section test-result ${result.passed ? 'pass' : 'fail'}`;
+                div.innerHTML = `
+                    <strong>${result.passed ? '✓ PASS' : '✗ FAIL'}: ${result.name}</strong><br>
+                    <span>${result.message || ''}</span>
+                `;
+                container.appendChild(div);
+                if (result.passed) passCount++; else failCount++;
+            });
+
+            const summary = document.createElement('div');
+            summary.className = 'summary';
+            summary.innerHTML = `
+                <strong>Summary:</strong> ${passCount} passed, ${failCount} failed, ${results.length} total.
+            `;
+            container.insertBefore(summary, container.firstChild);
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function reloadAppFrame() {
+            const frame = document.getElementById('appFrame');
+            return new Promise(resolve => {
+                frame.onload = () => resolve(frame);
+                // Cache-bust to ensure scripts re-run
+                const url = 'public/index.html?ts=' + Date.now();
+                frame.src = url;
+            });
+        }
+
+        async function runAllTests() {
+            clearResults();
+
+            try {
+                const frame = await reloadAppFrame();
+                const win = frame.contentWindow;
+                const doc = frame.contentDocument || win.document;
+
+                // Give the app a moment to finish initial animations & scripts
+                await delay(100);
+
+                await testSplashScreenAutoHide(win, doc);
+                await testQuickStartContentToggle(win, doc);
+                await testQuickStartIconRotation(win, doc);
+                await testFaqToggle(win, doc);
+                await testHauntedPresetFeedback(win, doc);
+            } catch (error) {
+                addResult('Test harness initialization', false, 'Error initializing tests: ' + (error && error.message ? error.message : String(error)));
+            }
+
+            renderResults();
+        }
+
+        async function testSplashScreenAutoHide(win, doc) {
+            const splash = doc.getElementById('splashScreen');
+            if (!splash) {
+                addResult('Splash screen hides after specified duration', false, 'Element with id "splashScreen" not found.');
+                return;
+            }
+
+            // Wait slightly longer than the configured 2800ms auto-hide timeout
+            await delay(3100);
+
+            const isHidden = splash.classList.contains('hidden');
+            addResult(
+                'Splash screen hides after specified duration',
+                isHidden,
+                isHidden
+                    ? 'Splash screen element has class "hidden" after ~3.1s.'
+                    : 'Splash screen element did not have class "hidden" after ~3.1s.'
+            );
+        }
+
+        async function testQuickStartContentToggle(win, doc) {
+            const header = doc.querySelector('.quick-start-header');
+            const content = doc.getElementById('quickStartContent');
+
+            if (!header || !content) {
+                addResult('Quick Start Guide content toggles visibility', false, 'Quick start header or content element not found.');
+                return;
+            }
+
+            const initiallyOpen = content.classList.contains('open');
+
+            header.click();
+            await delay(50);
+            const afterFirstClickOpen = content.classList.contains('open');
+
+            header.click();
+            await delay(50);
+            const afterSecondClickOpen = content.classList.contains('open');
+
+            const passed = !initiallyOpen && afterFirstClickOpen && !afterSecondClickOpen;
+
+            addResult(
+                'Quick Start Guide content toggles visibility when header is clicked',
+                passed,
+                `Initial open=${initiallyOpen}, after 1st click=${afterFirstClickOpen}, after 2nd click=${afterSecondClickOpen}.`
+            );
+        }
+
+        async function testQuickStartIconRotation(win, doc) {
+            const header = doc.querySelector('.quick-start-header');
+            const toggleBtn = doc.getElementById('quickStartToggle');
+
+            if (!header || !toggleBtn) {
+                addResult('Quick Start Guide toggle icon rotates on expand/collapse', false, 'Quick start header or toggle button not found.');
+                return;
+            }
+
+            const initiallyOpen = toggleBtn.classList.contains('open');
+
+            header.click();
+            await delay(50);
+            const afterFirstClickOpen = toggleBtn.classList.contains('open');
+
+            header.click();
+            await delay(50);
+            const afterSecondClickOpen = toggleBtn.classList.contains('open');
+
+            const passed = !initiallyOpen && afterFirstClickOpen && !afterSecondClickOpen;
+
+            addResult(
+                'Quick Start Guide toggle icon rotates when content is expanded/collapsed',
+                passed,
+                `Toggle class "open": initial=${initiallyOpen}, after 1st click=${afterFirstClickOpen}, after 2nd click=${afterSecondClickOpen}.`
+            );
+        }
+
+        async function testFaqToggle(win, doc) {
+            const item = doc.querySelector('.faq-item');
+            if (!item) {
+                addResult('FAQ answer toggles visibility when question is clicked', false, 'No ".faq-item" element found.');
+                return;
+            }
+
+            const question = item.querySelector('.faq-question');
+            const answer = item.querySelector('.faq-answer');
+
+            if (!question || !answer) {
+                addResult('FAQ answer toggles visibility when question is clicked', false, 'FAQ question or answer element not found.');
+                return;
+            }
+
+            const initiallyOpen = item.classList.contains('open');
+
+            question.click();
+            await delay(50);
+            const afterFirstClickOpen = item.classList.contains('open');
+            const displayWhenOpen = win.getComputedStyle(answer).display;
+
+            question.click();
+            await delay(50);
+            const afterSecondClickOpen = item.classList.contains('open');
+
+            const passed =
+                !initiallyOpen &&
+                afterFirstClickOpen &&
+                displayWhenOpen !== 'none' &&
+                !afterSecondClickOpen;
+
+            addResult(
+                'FAQ answer toggles visibility when question is clicked',
+                passed,
+                `Initial open=${initiallyOpen}, after 1st click=${afterFirstClickOpen} (answer display=${displayWhenOpen}), after 2nd click=${afterSecondClickOpen}.`
+            );
+        }
+
+        async function testHauntedPresetFeedback(win, doc) {
+            const businessTypeSelect = doc.getElementById('business_type');
+            const feedback = doc.getElementById('presetFeedback');
+
+            if (!businessTypeSelect || !feedback) {
+                addResult('Haunted preset shows correct feedback message', false, 'Business type select or preset feedback element not found.');
+                return;
+            }
+
+            if (typeof win.applyPresetToForm !== 'function') {
+                addResult('Haunted preset shows correct feedback message', false, 'Global function window.applyPresetToForm is not available.');
+                return;
+            }
+
+            // Select a valid business type and trigger change
+            businessTypeSelect.value = 'coffee_shop';
+            businessTypeSelect.dispatchEvent(new win.Event('change', { bubbles: true }));
+
+            // Apply preset and allow DOM updates
+            win.applyPresetToForm();
+            await delay(100);
+
+            const expectedMessage = '👻 Haunted preset applied! Customize the content above, then generate your website.';
+            const textMatches = (feedback.textContent || '').trim() === expectedMessage;
+            const isVisible = feedback.style.display === 'block';
+            const hasSuccessClass = feedback.className.includes('message') && feedback.className.includes('success');
+
+            // Also verify it auto-hides after ~4 seconds
+            await delay(4200);
+            const hiddenAfterTimeout = feedback.style.display === 'none';
+
+            const passed = textMatches && isVisible && hasSuccessClass && hiddenAfterTimeout;
+
+            addResult(
+                'Applying a haunted preset displays the correct haunted feedback message',
+                passed,
+                `Text matches=${textMatches}, visibleInitially=${isVisible}, classesOk=${hasSuccessClass}, hiddenAfterTimeout=${hiddenAfterTimeout}.`
+            );
+        }
+    </script>
+</body>
+</html>
