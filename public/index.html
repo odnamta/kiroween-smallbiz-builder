@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎃 Kiroween Website Builder</title>
+    <title>👻 GhostHost - Spooky Website Builder</title>
+    <meta name="description" content="Create a hauntingly beautiful website for your business in minutes. No coding required.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ========================================
-           KIROWEEN SPOOKY FORM STYLES
-           Halloween-themed website builder UI
+           GHOSTHOST - SPOOKY WEBSITE BUILDER
+           Built for Kiroween Hackathon 2025
            ======================================== */
         
         :root {
@@ -26,14 +27,9 @@
             --text-primary: #f0f0f0;
             --text-secondary: #a0a0b0;
             --border-subtle: rgba(255, 255, 255, 0.1);
-            --border-focus: #ff6b35;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -44,29 +40,107 @@
             overflow-x: hidden;
         }
 
-        /* Animated background with floating ghosts */
+        /* Animated background */
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: 
                 radial-gradient(ellipse at 20% 20%, var(--purple-glow) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, var(--orange-glow) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.8) 0%, transparent 100%);
+                radial-gradient(ellipse at 80% 80%, var(--orange-glow) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
             animation: bgPulse 8s ease-in-out infinite;
         }
 
-        @keyframes bgPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+        @keyframes bgPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        /* ========== SPLASH SCREEN ========== */
+        .splash-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
 
-        /* Floating ghost particles */
+        .splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .splash-ghost {
+            font-size: 8rem;
+            animation: splashFloat 2s ease-in-out infinite, splashGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes splashFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        @keyframes splashGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px var(--orange-glow)); }
+            50% { filter: drop-shadow(0 0 40px var(--orange-primary)) drop-shadow(0 0 60px var(--purple-glow)); }
+        }
+
+        .splash-title {
+            font-family: 'Creepster', cursive;
+            font-size: 4rem;
+            color: var(--orange-primary);
+            text-shadow: 0 0 30px var(--orange-glow);
+            margin-top: 1rem;
+            animation: flickerSplash 3s infinite;
+        }
+
+        @keyframes flickerSplash {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.3; }
+            94% { opacity: 1; }
+            96% { opacity: 0.5; }
+            97% { opacity: 1; }
+        }
+
+        .splash-tagline {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .splash-loader {
+            margin-top: 2rem;
+            width: 200px;
+            height: 4px;
+            background: var(--border-subtle);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .splash-loader-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple-primary), var(--orange-primary));
+            animation: loadBar 2.5s ease-in-out forwards;
+        }
+
+        @keyframes loadBar {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        /* ========== ANIMATIONS ========== */
         .ghost-particle {
             position: fixed;
             font-size: 1.5rem;
@@ -83,7 +157,6 @@
             100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
         }
 
-        /* Flickering effect for spooky elements */
         @keyframes flicker {
             0%, 100% { opacity: 1; }
             41% { opacity: 1; }
@@ -98,53 +171,40 @@
             50% { transform: translateY(-5px); }
         }
 
-        @keyframes skeletonShimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 20px var(--orange-glow); }
             50% { box-shadow: 0 0 40px var(--orange-glow), 0 0 60px var(--purple-glow); }
         }
 
-        /* App Shell */
+        /* ========== LAYOUT ========== */
         .app-shell {
             min-height: 100vh;
             padding: 24px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 2.8s forwards;
         }
 
-        /* Spooky Header */
+        @keyframes fadeIn { to { opacity: 1; } }
+
         .app-header {
             text-align: center;
             padding: 20px 0;
-            position: relative;
         }
 
         .app-header h1 {
             font-family: 'Creepster', cursive;
             font-size: 3rem;
             color: var(--orange-primary);
-            text-shadow: 
-                0 0 10px var(--orange-glow),
-                0 0 20px var(--orange-glow),
-                0 0 40px var(--orange-glow);
+            text-shadow: 0 0 10px var(--orange-glow), 0 0 20px var(--orange-glow), 0 0 40px var(--orange-glow);
             animation: flicker 5s infinite, gentleFloat 3s ease-in-out infinite;
             letter-spacing: 2px;
         }
 
-        .app-header h1::before {
-            content: '🎃';
-            margin-right: 10px;
-        }
-
-        .app-header h1::after {
-            content: '👻';
-            margin-left: 10px;
-        }
+        .app-header h1::before { content: '👻'; margin-right: 10px; }
+        .app-header h1::after { content: '🎃'; margin-left: 10px; }
 
         .subtitle {
             color: var(--text-secondary);
@@ -152,7 +212,88 @@
             margin-top: 8px;
         }
 
-        /* Main Layout */
+        /* ========== QUICK START GUIDE ========== */
+        .quick-start {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.15), rgba(255, 107, 53, 0.1));
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-start-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .quick-start-header h2 {
+            font-size: 1.1rem;
+            color: var(--orange-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-start-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .quick-start-toggle.open { transform: rotate(180deg); }
+
+        .quick-start-content {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .quick-start-content.open { display: block; }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .step {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            border-color: var(--purple-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--orange-primary), var(--purple-primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 0 auto 0.75rem;
+        }
+
+        .step-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .step-title { font-weight: 600; margin-bottom: 0.25rem; }
+        .step-desc { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* ========== MAIN GRID ========== */
         .app-main {
             display: grid;
             grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
@@ -160,44 +301,34 @@
             flex: 1;
         }
 
-        /* Card Styles */
-        .form-column,
-        .preview-column {
+        .form-column, .preview-column {
             background: var(--bg-card);
             border-radius: 16px;
             padding: 24px;
             border: 1px solid var(--border-subtle);
-            box-shadow: 
-                0 20px 50px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             position: relative;
             overflow: hidden;
         }
 
-        /* Spooky corner decorations */
-        .form-column::before,
-        .preview-column::before {
+        .form-column::before, .preview-column::before {
             content: '🕸️';
             position: absolute;
-            top: -5px;
-            left: -5px;
+            top: -5px; left: -5px;
             font-size: 2rem;
             opacity: 0.3;
             transform: rotate(-45deg);
         }
 
-        .form-column::after,
-        .preview-column::after {
+        .form-column::after, .preview-column::after {
             content: '🕷️';
             position: absolute;
-            top: 30px;
-            left: 10px;
+            top: 30px; left: 10px;
             font-size: 1rem;
             opacity: 0.2;
             animation: gentleFloat 4s ease-in-out infinite;
         }
 
-        /* Preview Header */
         .preview-header {
             display: flex;
             justify-content: space-between;
@@ -215,9 +346,7 @@
             gap: 8px;
         }
 
-        .preview-header h2::before {
-            content: '👁️';
-        }
+        .preview-header h2::before { content: '👁️'; }
 
         .live-indicator {
             display: flex;
@@ -228,8 +357,7 @@
         }
 
         .live-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             background: var(--green-accent);
             border-radius: 50%;
             animation: pulseGlow 2s infinite;
@@ -237,23 +365,18 @@
 
         .preview-frame {
             width: 100%;
-            height: calc(100vh - 280px);
-            min-height: 500px;
+            height: calc(100vh - 400px);
+            min-height: 400px;
             border-radius: 12px;
             border: 2px solid var(--border-subtle);
             background: #ffffff;
             transition: border-color 0.3s;
         }
 
-        .preview-frame:hover {
-            border-color: var(--orange-primary);
-        }
+        .preview-frame:hover { border-color: var(--orange-primary); }
 
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 1.25rem;
-            position: relative;
-        }
+        /* ========== FORM STYLES ========== */
+        .form-group { margin-bottom: 1.25rem; }
 
         label {
             display: block;
@@ -276,14 +399,9 @@
             margin-bottom: 6px;
         }
 
-        .field-label-row label {
-            margin-bottom: 0;
-        }
+        .field-label-row label { margin-bottom: 0; }
 
-        /* Input Styles with Spooky Hover */
-        input[type="text"],
-        select,
-        textarea {
+        input[type="text"], select, textarea {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 2px solid var(--border-subtle);
@@ -295,33 +413,22 @@
             transition: all 0.3s ease;
         }
 
-        input[type="text"]:hover,
-        select:hover,
-        textarea:hover {
+        input[type="text"]:hover, select:hover, textarea:hover {
             border-color: var(--purple-primary);
             box-shadow: 0 0 15px var(--purple-glow);
         }
 
-        input[type="text"]:focus,
-        select:focus,
-        textarea:focus {
+        input[type="text"]:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--orange-primary);
             box-shadow: 0 0 20px var(--orange-glow);
             background: rgba(30, 30, 50, 0.9);
         }
 
-        select option {
-            background: #1a1a2e;
-            color: var(--text-primary);
-        }
+        select option { background: #1a1a2e; color: var(--text-primary); }
+        textarea { resize: vertical; min-height: 100px; }
 
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        /* AI Helper Buttons */
+        /* ========== BUTTONS ========== */
         .ai-helper-btn {
             border: none;
             border-radius: 20px;
@@ -332,23 +439,6 @@
             color: white;
             transition: all 0.3s ease;
             white-space: nowrap;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ai-helper-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .ai-helper-btn:hover::before {
-            left: 100%;
         }
 
         .ai-helper-btn:hover {
@@ -356,17 +446,8 @@
             box-shadow: 0 5px 20px var(--purple-glow);
         }
 
-        /* Tone Toggle */
-        .tone-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
-        }
-
-        .tone-toggle-label {
-            color: var(--text-secondary);
-        }
+        .tone-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; }
+        .tone-toggle-label { color: var(--text-secondary); }
 
         .tone-select {
             border-radius: 20px;
@@ -380,125 +461,6 @@
             min-width: auto;
         }
 
-        /* Theme Selector - Spooky Cards */
-        .theme-selector {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .theme-option {
-            flex: 1;
-            min-width: 180px;
-        }
-
-        .theme-option input[type="radio"] {
-            display: none;
-        }
-
-        .theme-option label {
-            display: block;
-            padding: 1.25rem;
-            border: 2px solid var(--border-subtle);
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s ease;
-            background: var(--bg-input);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .theme-option label::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(255,107,53,0.1) 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .theme-option input[type="radio"]:checked + label {
-            border-color: var(--orange-primary);
-            box-shadow: 0 0 30px var(--orange-glow);
-        }
-
-        .theme-option input[type="radio"]:checked + label::before {
-            opacity: 1;
-        }
-
-        .theme-option label:hover {
-            border-color: var(--purple-primary);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .theme-option label strong {
-            display: block;
-            font-size: 1.1rem;
-            margin-bottom: 4px;
-            color: var(--orange-primary);
-        }
-
-        .theme-option label span {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        /* Menu Items Section */
-        .menu-items-section {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border-subtle);
-            position: relative;
-        }
-
-        .menu-items-section h2 {
-            font-size: 1.15rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .menu-item {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            align-items: flex-start;
-            padding: 1rem;
-            background: var(--bg-input);
-            border-radius: 8px;
-            border: 1px solid var(--border-subtle);
-            transition: all 0.3s ease;
-        }
-
-        .menu-item:hover {
-            border-color: var(--purple-primary);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
-
-        .menu-item-fields {
-            flex: 1;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .menu-item-field {
-            flex: 1;
-            min-width: 140px;
-        }
-
-        .menu-item-field label {
-            font-size: 0.85rem;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Buttons */
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
@@ -516,17 +478,13 @@
         .btn::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: left 0.5s;
         }
 
-        .btn:hover::before {
-            left: 100%;
-        }
+        .btn:hover::before { left: 100%; }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--orange-primary), #ff8c42);
@@ -541,10 +499,6 @@
         .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 40px var(--orange-glow);
-        }
-
-        .btn-primary:active {
-            transform: translateY(-1px);
         }
 
         .btn-secondary {
@@ -570,11 +524,7 @@
             box-shadow: 0 8px 30px var(--purple-glow);
         }
 
-        .btn-preset:disabled {
-            background: #4a4a5a;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
+        .btn-preset:disabled { background: #4a4a5a; cursor: not-allowed; opacity: 0.6; }
 
         .btn-remove {
             background: linear-gradient(135deg, var(--red-error), #c0392b);
@@ -585,178 +535,179 @@
             margin-top: 1.75rem;
         }
 
-        .btn-remove:hover {
-            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
-        }
-
         .btn-add {
             background: linear-gradient(135deg, var(--green-accent), #27ae60);
             color: white;
             margin-top: 0.5rem;
         }
 
-        .btn-add:hover {
-            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.4);
+        /* ========== THEME SELECTOR ========== */
+        .theme-selector { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .theme-option { flex: 1; min-width: 180px; }
+        .theme-option input[type="radio"] { display: none; }
+
+        .theme-option label {
+            display: block;
+            padding: 1.25rem;
+            border: 2px solid var(--border-subtle);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: var(--bg-input);
         }
 
-        /* Error Messages */
-        .error-message {
-            color: var(--red-error);
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
-            display: none;
+        .theme-option input[type="radio"]:checked + label {
+            border-color: var(--orange-primary);
+            box-shadow: 0 0 30px var(--orange-glow);
         }
 
-        .form-group.error input,
-        .form-group.error select,
-        .form-group.error textarea,
-        .menu-item-field.error input {
+        .theme-option label:hover {
+            border-color: var(--purple-primary);
+            transform: translateY(-3px);
+        }
+
+        .theme-option label strong { display: block; font-size: 1.1rem; margin-bottom: 4px; color: var(--orange-primary); }
+        .theme-option label span { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* ========== MENU ITEMS ========== */
+        .menu-items-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .menu-items-section h2 { font-size: 1.15rem; margin-bottom: 1rem; color: var(--text-primary); }
+
+        .menu-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: flex-start;
+            padding: 1rem;
+            background: var(--bg-input);
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover { border-color: var(--purple-primary); box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+        .menu-item-fields { flex: 1; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .menu-item-field { flex: 1; min-width: 140px; }
+        .menu-item-field label { font-size: 0.85rem; margin-bottom: 0.25rem; }
+
+        /* ========== MESSAGES ========== */
+        .error-message { color: var(--red-error); font-size: 0.85rem; margin-top: 0.25rem; display: none; }
+
+        .form-group.error input, .form-group.error select, .form-group.error textarea, .menu-item-field.error input {
             border-color: var(--red-error);
             box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
         }
 
-        .form-group.error .error-message,
-        .menu-item-field.error .error-message {
-            display: block;
-        }
+        .form-group.error .error-message, .menu-item-field.error .error-message { display: block; }
 
-        /* Messages */
-        .message {
-            padding: 1rem;
-            border-radius: 8px;
+        .message { padding: 1rem; border-radius: 8px; margin-top: 1rem; font-weight: 500; }
+        .message.success { background: rgba(46, 204, 113, 0.15); color: #86efac; border: 1px solid rgba(46, 204, 113, 0.3); }
+        .message.error { background: rgba(231, 76, 60, 0.15); color: #fca5a5; border: 1px solid rgba(231, 76, 60, 0.3); }
+
+        .helper-text { color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem; font-style: italic; }
+        .menu-helper-text { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; }
+
+        /* ========== FAQ SECTION ========== */
+        .faq-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
             margin-top: 1rem;
-            font-weight: 500;
+            border: 1px solid var(--border-subtle);
         }
 
-        .message.success {
-            background: rgba(46, 204, 113, 0.15);
-            color: #86efac;
-            border: 1px solid rgba(46, 204, 113, 0.3);
-        }
-
-        .message.error {
-            background: rgba(231, 76, 60, 0.15);
-            color: #fca5a5;
-            border: 1px solid rgba(231, 76, 60, 0.3);
-        }
-
-        .helper-text {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-            font-style: italic;
-        }
-
-        .menu-helper-text {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+        .faq-section h2 {
+            font-size: 1.25rem;
+            color: var(--orange-primary);
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Skeleton Loading Animation */
-        .skeleton-loading {
-            background: linear-gradient(90deg, var(--bg-input) 25%, rgba(255,255,255,0.1) 50%, var(--bg-input) 75%);
-            background-size: 200% 100%;
-            animation: skeletonShimmer 1.5s infinite;
-            border-radius: 8px;
+        .faq-item {
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 1rem 0;
         }
 
-        /* Generating State */
-        .generating .btn-primary {
-            background: linear-gradient(135deg, var(--purple-primary), var(--orange-primary));
-            animation: pulseGlow 1s infinite;
+        .faq-item:last-child { border-bottom: none; }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: color 0.3s;
         }
 
-        .generating .btn-primary::after {
-            content: '...';
-            animation: dots 1.5s infinite;
+        .faq-question:hover { color: var(--orange-primary); }
+
+        .faq-toggle {
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+            color: var(--text-secondary);
         }
 
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
+        .faq-item.open .faq-toggle { transform: rotate(45deg); color: var(--orange-primary); }
+
+        .faq-answer {
+            display: none;
+            padding-top: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
         }
 
-        /* Mobile Responsive */
+        .faq-item.open .faq-answer { display: block; }
+
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 1024px) {
-            .app-main {
-                grid-template-columns: 1fr;
-            }
-
-            .preview-frame {
-                height: 400px;
-                min-height: 400px;
-            }
+            .app-main { grid-template-columns: 1fr; }
+            .preview-frame { height: 400px; min-height: 400px; }
         }
 
         @media (max-width: 768px) {
-            .app-shell {
-                padding: 16px;
-            }
-
-            .app-header h1 {
-                font-size: 2rem;
-            }
-
-            .menu-item {
-                flex-direction: column;
-            }
-
-            .menu-item-fields {
-                width: 100%;
-            }
-
-            .btn-remove {
-                margin-top: 0.5rem;
-                width: 100%;
-            }
-
-            .theme-option {
-                min-width: 100%;
-            }
+            .app-shell { padding: 16px; }
+            .app-header h1 { font-size: 2rem; }
+            .splash-title { font-size: 2.5rem; }
+            .splash-ghost { font-size: 5rem; }
+            .menu-item { flex-direction: column; }
+            .menu-item-fields { width: 100%; }
+            .btn-remove { margin-top: 0.5rem; width: 100%; }
+            .theme-option { min-width: 100%; }
+            .steps { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
-            .app-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .app-header h1::before,
-            .app-header h1::after {
-                display: none;
-            }
-
-            .menu-item-fields {
-                flex-direction: column;
-            }
-
-            .menu-item-field {
-                width: 100%;
-            }
-
-            .field-label-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-        }
-
-        /* Spooky cursor trail effect */
-        .cursor-trail {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: var(--orange-primary);
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0.5;
-            z-index: 9999;
-            transition: transform 0.1s, opacity 0.5s;
+            .app-header h1 { font-size: 1.5rem; }
+            .app-header h1::before, .app-header h1::after { display: none; }
+            .menu-item-fields { flex-direction: column; }
+            .menu-item-field { width: 100%; }
+            .field-label-row { flex-direction: column; align-items: flex-start; gap: 8px; }
         }
     </style>
 </head>
 <body>
+    <!-- ========== SPLASH SCREEN ========== -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-ghost">👻</div>
+        <h1 class="splash-title">GhostHost</h1>
+        <p class="splash-tagline">Conjuring your website...</p>
+        <div class="splash-loader">
+            <div class="splash-loader-bar"></div>
+        </div>
+    </div>
+
     <!-- Floating ghost particles -->
     <div class="ghost-particle" style="left: 10%; animation-delay: 0s;">👻</div>
     <div class="ghost-particle" style="left: 25%; animation-delay: 3s;">🦇</div>
@@ -768,10 +719,41 @@
 
     <div class="app-shell">
         <header class="app-header">
-            <h1>Kiroween Builder</h1>
-            <p class="subtitle">Conjure a professional landing page for your business in minutes</p>
+            <h1>GhostHost</h1>
+            <p class="subtitle">Conjure a hauntingly beautiful website for your business in minutes</p>
         </header>
-        
+
+        <!-- ========== QUICK START GUIDE ========== -->
+        <div class="quick-start">
+            <div class="quick-start-header" onclick="toggleQuickStart()">
+                <h2>🚀 Quick Start Guide</h2>
+                <button class="quick-start-toggle" id="quickStartToggle">▼</button>
+            </div>
+            <div class="quick-start-content" id="quickStartContent">
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-icon">📝</div>
+                        <div class="step-title">Fill the Form</div>
+                        <div class="step-desc">Enter your business details or click "Use Haunted Preset" for quick start</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-icon">👁️</div>
+                        <div class="step-title">Preview Live</div>
+                        <div class="step-desc">Watch your website come to life in real-time as you type</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-icon">🚀</div>
+                        <div class="step-title">Generate & Deploy</div>
+                        <div class="step-desc">Download your files and follow the simple deployment guide</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== MAIN CONTENT ========== -->
         <main class="app-main">
             <section class="form-column">
                 <form id="websiteForm">
@@ -805,7 +787,6 @@
                         <p class="helper-text">Auto-fill with spooky sample content you can customize</p>
                     </div>
 
-                    <!-- Preset Feedback Message -->
                     <div id="presetFeedback" class="message" style="display: none;"></div>
 
                     <!-- Tagline -->
@@ -820,7 +801,7 @@
                                         <option value="haunted" selected>🎃 Haunted</option>
                                     </select>
                                 </div>
-                                <button type="button" id="autoTaglineBtn" class="ai-helper-btn">✨ Auto Tagline</button>
+                                <button type="button" id="autoTaglineBtn" class="ai-helper-btn">✨ Auto</button>
                             </div>
                         </div>
                         <input type="text" id="tagline" name="tagline" required maxlength="150" placeholder="e.g., Where shadows meet great taste">
@@ -831,7 +812,7 @@
                     <div class="form-group">
                         <div class="field-label-row">
                             <label for="short_description">Short Description <span class="required">*</span></label>
-                            <button type="button" id="autoDescriptionBtn" class="ai-helper-btn">✨ Auto Description</button>
+                            <button type="button" id="autoDescriptionBtn" class="ai-helper-btn">✨ Auto</button>
                         </div>
                         <textarea id="short_description" name="short_description" required maxlength="500" placeholder="Tell customers about your mysteriously wonderful business..."></textarea>
                         <div class="error-message">Please enter a description</div>
@@ -841,7 +822,7 @@
                     <div class="form-group">
                         <label for="contact_whatsapp">WhatsApp Number <span class="required">*</span></label>
                         <input type="text" id="contact_whatsapp" name="contact_whatsapp" required maxlength="20" placeholder="e.g., 628123456789">
-                        <div class="error-message">Please enter a valid WhatsApp number (digits only)</div>
+                        <div class="error-message">Please enter a valid WhatsApp number</div>
                     </div>
 
                     <!-- Instagram Handle -->
@@ -881,7 +862,6 @@
                         </div>
                         <p class="menu-helper-text" id="menuHelperText" style="display: none;">Optional: Add service items if desired</p>
                         <div id="menuItemsContainer">
-                            <!-- Initial menu item -->
                             <div class="menu-item" data-item-index="0">
                                 <div class="menu-item-fields">
                                     <div class="menu-item-field">
@@ -903,9 +883,7 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary">🎃 Generate My Haunted Website</button>
-                    
-                    <!-- Generation Message -->
+                    <button type="submit" class="btn btn-primary">👻 Generate My Haunted Website</button>
                     <div id="generationMessage" class="message" style="display: none;"></div>
                 </form>
             </section>
@@ -921,9 +899,70 @@
                 <iframe id="previewFrame" title="Website Preview" class="preview-frame"></iframe>
             </section>
         </main>
+
+        <!-- ========== FAQ SECTION ========== -->
+        <div class="faq-section">
+            <h2>❓ Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>What is GhostHost?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    GhostHost is a free, no-code website builder designed for small businesses. Fill out a simple form, and we'll generate a professional landing page with your business info, menu, and contact links. No coding skills required!
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>How do I deploy my website?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    After generating, you'll download 4 files. The easiest way to deploy is drag-and-drop to <strong>Netlify</strong> (free): Go to app.netlify.com/drop and upload your files. You'll get a live URL in seconds! The downloaded deployment-instructions.txt file has step-by-step guides for other platforms too.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>What's "Haunted Mode"?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    Haunted Mode generates playfully spooky content for your business — think "Coffee so dark it might wake the dead" instead of "Your daily dose of happiness." It's fun, memorable, and still professional. Perfect for standing out! You can toggle between Normal and Haunted in the Tone selector.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Is this really free?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! GhostHost is 100% free. No account required, no hidden fees. Your generated website files are yours to keep and host anywhere. We built this for the Kiroween Hackathon to help small business owners get online quickly.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>Can I update my website later?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! Just come back, fill out the form with your updated info, generate new files, and re-upload to your hosting. Your old site will be replaced with the new one. It's that simple.
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 1.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+            <p>Built with 👻 for <a href="https://kiroween.devpost.com" target="_blank" style="color: var(--orange-primary);">Kiroween Hackathon 2025</a></p>
+            <p style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.7;">Powered by Kiro AI</p>
+        </footer>
     </div>
 
-    <!-- Load modules -->
+    <!-- ========== SCRIPTS ========== -->
     <script src="js/sanitization.js"></script>
     <script src="js/validation.js"></script>
     <script src="js/template-engine.js"></script>
@@ -934,10 +973,8 @@
     <script src="js/preview.js" defer></script>
     <script src="js/ai-helpers.js" defer></script>
     
-    <!-- Initialize form controller -->
     <script type="module">
         import { initializeFormController } from './js/form-controller.js';
-        
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeFormController);
         } else {
@@ -946,6 +983,26 @@
     </script>
     
     <script>
+        // Splash screen auto-hide
+        setTimeout(() => {
+            document.getElementById('splashScreen').classList.add('hidden');
+        }, 2800);
+
+        // Quick Start toggle
+        function toggleQuickStart() {
+            const content = document.getElementById('quickStartContent');
+            const toggle = document.getElementById('quickStartToggle');
+            content.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
+        // FAQ toggle
+        function toggleFaq(element) {
+            const item = element.parentElement;
+            item.classList.toggle('open');
+        }
+
+        // Menu item management
         let menuItemCount = 1;
         const MAX_MENU_ITEMS = 20;
 
@@ -978,7 +1035,6 @@
             
             container.appendChild(menuItem);
             menuItemCount++;
-            
             updateRemoveButtons();
             attachValidationListeners();
             triggerPreviewUpdate();
@@ -990,12 +1046,8 @@
                 alert('You must have at least one menu item');
                 return;
             }
-            
             const menuItem = document.querySelector(`.menu-item[data-item-index="${index}"]`);
-            if (menuItem) {
-                menuItem.remove();
-            }
-            
+            if (menuItem) menuItem.remove();
             updateRemoveButtons();
             triggerPreviewUpdate();
         }
@@ -1003,12 +1055,7 @@
         function updateRemoveButtons() {
             const menuItems = document.querySelectorAll('.menu-item');
             const removeButtons = document.querySelectorAll('.btn-remove');
-            
-            if (menuItems.length === 1) {
-                removeButtons.forEach(btn => btn.style.display = 'none');
-            } else {
-                removeButtons.forEach(btn => btn.style.display = 'block');
-            }
+            removeButtons.forEach(btn => btn.style.display = menuItems.length === 1 ? 'none' : 'block');
         }
 
         function attachValidationListeners() {
@@ -1016,7 +1063,6 @@
             fields.forEach(field => {
                 field.removeEventListener('blur', handleFieldBlur);
                 field.addEventListener('blur', handleFieldBlur);
-                // Auto-update preview on input
                 field.removeEventListener('input', triggerPreviewUpdate);
                 field.addEventListener('input', debounce(triggerPreviewUpdate, 500));
             });
@@ -1030,9 +1076,7 @@
         }
 
         function handleFieldBlur(e) {
-            if (typeof Validation !== 'undefined') {
-                Validation.validateField(e.target);
-            }
+            if (typeof Validation !== 'undefined') Validation.validateField(e.target);
         }
 
         function handleRadioChange(e) {
@@ -1046,31 +1090,22 @@
             }
         }
 
-        // Debounce function for auto-preview
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
                 clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
+                timeout = setTimeout(() => func(...args), wait);
             };
         }
 
-        // Trigger preview update
         function triggerPreviewUpdate() {
             if (typeof window.PreviewTest !== 'undefined' && typeof window.PreviewTest.updatePreview === 'function') {
                 window.PreviewTest.updatePreview();
             }
         }
 
-        // Initialize
         updateRemoveButtons();
         attachValidationListeners();
-        
-        // Initial preview update after page load
         setTimeout(triggerPreviewUpdate, 1000);
     </script>
 
@@ -1088,21 +1123,17 @@
             }
             
             const preset = getPreset(businessType);
-            
             if (!preset) {
                 alert('No preset available for this business type');
                 return;
             }
             
-            // Set tagline
             const taglineField = document.getElementById('tagline');
             if (taglineField) taglineField.value = preset.default_tagline;
             
-            // Set description
             const descriptionField = document.getElementById('short_description');
             if (descriptionField) descriptionField.value = preset.default_short_description;
             
-            // Populate menu items
             if (preset.default_menu_items && preset.default_menu_items.length > 0) {
                 const container = document.getElementById('menuItemsContainer');
                 if (container) {
@@ -1131,7 +1162,6 @@
                             </div>
                             <button type="button" class="btn btn-remove" onclick="removeMenuItem(${index})">✕</button>
                         `;
-                        
                         container.appendChild(menuItem);
                     });
                     
@@ -1141,16 +1171,14 @@
                 }
             }
             
-            // Show feedback
             const feedback = document.getElementById('presetFeedback');
             if (feedback) {
-                feedback.textContent = '🎃 Preset applied! Customize the content above, then generate your website.';
+                feedback.textContent = '👻 Haunted preset applied! Customize the content above, then generate your website.';
                 feedback.className = 'message success';
                 feedback.style.display = 'block';
                 setTimeout(() => { feedback.style.display = 'none'; }, 4000);
             }
             
-            // Trigger preview update
             setTimeout(() => {
                 if (typeof window.triggerPreviewUpdate === 'function') window.triggerPreviewUpdate();
             }, 100);
