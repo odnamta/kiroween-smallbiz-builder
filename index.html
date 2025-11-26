@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="0;url=/public/">
+    <title>GhostHost - Redirecting...</title>
+    <style>
+        body {
+            background: #0a0a0f;
+            color: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .ghost { font-size: 4rem; animation: float 2s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        a { color: #ff6b35; }
+    </style>
+</head>
+<body>
+    <div class="ghost">👻</div>
+    <h1>Redirecting to GhostHost…</h1>
+    <p>If not redirected, <a href="/public/">click here</a>.</p>
+    <script>
+        window.location.replace('/public/');
+    </script>
+</body>
+</html>

@@ -248,6 +248,43 @@ Your business deserves a great online presence. 🚀`;
   return instructions;
 }
 
+/**
+ * Creates and downloads a ZIP file containing all website files
+ * @param {Object} files - Object with filename: content pairs
+ * @param {string} zipFilename - Name for the ZIP file
+ * @returns {Promise<void>}
+ */
+async function createZipFile(files, zipFilename = 'ghosthost-website.zip') {
+  try {
+    // Check if JSZip is available
+    if (typeof JSZip === 'undefined') {
+      console.warn('JSZip not loaded, falling back to individual downloads');
+      return false;
+    }
+
+    const zip = new JSZip();
+    
+    // Add each file to the ZIP
+    for (const [filename, content] of Object.entries(files)) {
+      zip.file(filename, content);
+    }
+    
+    // Generate the ZIP file
+    const zipBlob = await zip.generateAsync({ 
+      type: 'blob',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 6 }
+    });
+    
+    // Download the ZIP
+    downloadFile(zipBlob, zipFilename);
+    return true;
+  } catch (error) {
+    console.error('Error creating ZIP file:', error);
+    return false;
+  }
+}
+
 // Make functions available globally for non-module scripts
 if (typeof window !== 'undefined') {
   window.createFile = createFile;
@@ -257,4 +294,5 @@ if (typeof window !== 'undefined') {
   window.createJSONFile = createJSONFile;
   window.createTextFile = createTextFile;
   window.createDeploymentInstructions = createDeploymentInstructions;
+  window.createZipFile = createZipFile;
 }

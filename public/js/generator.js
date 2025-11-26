@@ -106,25 +106,37 @@
     }
 
     /**
-     * Creates and downloads all output files
+     * Creates and downloads all output files as a single ZIP
+     * Falls back to individual downloads if ZIP creation fails
      * @param {string} html - The generated HTML content
      * @param {string} css - The theme CSS content
      * @param {Array} menuData - The menu items data
      * @param {string} deploymentInstructions - The deployment instructions text
+     * @returns {Promise<boolean>} - True if ZIP was created, false if individual files
      */
-    function createOutputFiles(html, css, menuData, deploymentInstructions) {
+    async function createOutputFiles(html, css, menuData, deploymentInstructions) {
         try {
-            // Create and download HTML file
+            const files = {
+                'index.html': html,
+                'styles.css': css,
+                'menu.json': JSON.stringify({ menu_items: menuData }, null, 2),
+                'deployment-instructions.txt': deploymentInstructions
+            };
+
+            // Try to create ZIP file first
+            if (typeof createZipFile === 'function') {
+                const zipCreated = await createZipFile(files, 'ghosthost-website.zip');
+                if (zipCreated) {
+                    return true;
+                }
+            }
+
+            // Fallback to individual file downloads
             createHTMLFile(html, 'index.html');
-            
-            // Create and download CSS file
             createCSSFile(css, 'styles.css');
-            
-            // Create and download JSON file
             createJSONFile({ menu_items: menuData }, 'menu.json');
-            
-            // Create and download deployment instructions text file
             createTextFile(deploymentInstructions, 'deployment-instructions.txt');
+            return false;
         } catch (error) {
             console.error('Error creating output files:', error);
             throw new Error(ERROR_MESSAGES.BROWSER_NOT_SUPPORTED);
@@ -198,13 +210,13 @@
      */
     async function generateWebsite(formData) {
         try {
-            showMessage('Generating your website...', 'success');
+            showMessage('👻 Conjuring your website...', 'success');
             
             // Build all artifacts using pure function
             const artifacts = await buildSiteArtifacts(formData);
             
-            // Create and download files
-            createOutputFiles(
+            // Create and download files (as ZIP if possible)
+            const wasZip = await createOutputFiles(
                 artifacts.html,
                 artifacts.css,
                 JSON.parse(artifacts.menuJson).menu_items,
@@ -212,7 +224,11 @@
             );
             
             // Show success message
-            showMessage('✓ Website generated successfully! Your files are downloading now (4 files total).', 'success');
+            if (wasZip) {
+                showMessage('🎃 Website conjured! Your ghosthost-website.zip is downloading. Unzip and deploy to Netlify!', 'success');
+            } else {
+                showMessage('🎃 Website conjured! Your 4 files are downloading. Deploy them together to Netlify!', 'success');
+            }
             
         } catch (error) {
             console.error('Generation error:', error);
